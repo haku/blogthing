@@ -17,7 +17,10 @@ import uuid
 THINGS_DIR = Path(__file__).parent / 'things'
 THING_ID_PATTERN = re.compile(r'^[0-9a-f]{6}$')
 
-app = flask.Flask(__name__, static_folder='static')
+app = flask.Flask(
+    __name__,
+    static_url_path='',
+    static_folder='static')
 
 def thing_id_to_path(thing_id):
   if not THING_ID_PATTERN.match(thing_id):
