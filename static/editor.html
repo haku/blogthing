@@ -1,0 +1,270 @@
+<!doctype html>
+<!-- https://tiptap.dev/docs/editor/getting-started/install/vanilla-javascript#without-a-build-tool-cdn -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tiptap Editor</title>
+    <style>
+      body {
+        margin: 2rem;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      .editor-container {
+        max-width: 48rem;
+        margin: 0 auto;
+      }
+      .toolbar {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        border: 1px solid #d1d5db;
+        border-bottom: none;
+        border-radius: 0.375rem 0.375rem 0 0;
+        background: #f9fafb;
+        flex-wrap: wrap;
+      }
+      .toolbar button {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        background: transparent;
+        cursor: pointer;
+      }
+      .toolbar button:hover {
+        background: #e5e7eb;
+      }
+      .toolbar button.is-active {
+        background: #111827;
+        color: #fff;
+      }
+      .tiptap {
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0 0 0.375rem 0.375rem;
+        min-height: 10rem;
+        outline: none;
+      }
+      .tiptap p { margin: 0.5rem 0; }
+      .tiptap h1, .tiptap h2, .tiptap h3 { margin: 1rem 0 0.5rem; }
+      .tiptap ul, .tiptap ol { padding-left: 1.5rem; }
+      .tiptap pre {
+        background: #111827;
+        color: #f3f4f6;
+        padding: 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+      }
+      .tiptap code {
+        background: #f3f4f6;
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+      }
+      .tiptap pre code {
+        background: transparent;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">...</div>
+    <div id="status">...</div>
+    <div class="editor-container">
+      <div class="toolbar" id="toolbar">
+        <button data-tiptap-button="bold">Bold</button>
+        <button data-tiptap-button="italic">Italic</button>
+        <button data-tiptap-button="strike">Strike</button>
+        <button data-tiptap-button="code">Code</button>
+        <button data-tiptap-button="h1">H1</button>
+        <button data-tiptap-button="h2">H2</button>
+        <button data-tiptap-button="bulletList">Bullet List</button>
+        <button data-tiptap-button="orderedList">Ordered List</button>
+        <button data-tiptap-button="blockquote">Blockquote</button>
+        <button data-tiptap-button="codeBlock">Code Block</button>
+      </div>
+      <div id="editor"></div>
+    </div>
+
+    <script type="module">
+      let msgBox = document.getElementById('message');
+      function setMsg(msg) {
+        msgBox.textContent = msg;
+      }
+
+      let thing_version = 0;
+
+      function loadContent(editor) {
+        return fetch('/things/123456')
+          .then(response => {
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            return response.json();
+          })
+          .then(data => {
+            thing_version = data['thing_version']
+            editor.chain().focus().setContent(data).run()
+            setMsg(`Loaded version ${thing_version}.`)
+          })
+          .catch(error => {
+            console.error('Error fetching thing:', error)
+            setMsg(`Error fetching thing: ${error}`)
+          })
+          .then(_ => {
+            // runs even if load fails.
+            startAutosaveLoop(editor)
+          })
+      }
+
+      function saveContent(editor) {
+        let json = editor.getJSON();
+        json['thing_version'] = thing_version + 1;
+
+        return fetch('/things/123456', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(json),
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+          return response.json();
+        })
+        .then(data => {
+          thing_version = data['thing_version'];
+          setMsg(`Saved as version ${thing_version}.`)
+        })
+      }
+
+      const SAVE_INTERVAL = 10000;
+      let dirty = false;
+      let saving = false;
+      let lastSave = 0;
+
+      let statusBox = document.getElementById('status');
+      function updateStatusBox() {
+        statusBox.textContent = saving ? 'saving' : dirty ? 'dirty' : 'clean';
+      }
+      function markDirty() {
+        if (lastSave === 0) lastSave = Date.now();
+        dirty = true;
+        updateStatusBox();
+      }
+      function markClean() {
+        dirty = false;
+        updateStatusBox();
+      }
+
+      async function autosaveLoop(editor) {
+        if (dirty && !saving && Date.now() - lastSave >= SAVE_INTERVAL) {
+          saving = true;
+          markClean();
+
+          try {
+            await saveContent(editor);
+            lastSave = Date.now();
+          }
+          catch (error) {
+            console.error('Error saving thing:', error)
+            markDirty();
+            setMsg(`Error saving thing: ${error}`)
+            // TODO backup retry loop?
+          }
+          finally {
+            saving = false;
+            updateStatusBox();
+          }
+        }
+      }
+
+      function startAutosaveLoop(editor) {
+        markClean()
+        setInterval(() => autosaveLoop(editor), 1000);
+        editor.on('update', markDirty)
+        console.log('Autosave started.')
+      }
+
+      import { Editor } from 'https://esm.sh/@tiptap/core'
+      import StarterKit from 'https://esm.sh/@tiptap/starter-kit'
+
+      const editor = new Editor({
+        element: document.querySelector('#editor'),
+        extensions: [StarterKit],
+      })
+
+      // Wire up toolbar buttons
+      const buttons = document.querySelectorAll('[data-tiptap-button]')
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const command = button.dataset.tiptapButton
+
+          switch (command) {
+            case 'bold':
+              editor.chain().focus().toggleBold().run()
+              break
+            case 'italic':
+              editor.chain().focus().toggleItalic().run()
+              break
+            case 'strike':
+              editor.chain().focus().toggleStrike().run()
+              break
+            case 'code':
+              editor.chain().focus().toggleCode().run()
+              break
+            case 'h1':
+              editor.chain().focus().toggleHeading({ level: 1 }).run()
+              break
+            case 'h2':
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+              break
+            case 'bulletList':
+              editor.chain().focus().toggleBulletList().run()
+              break
+            case 'orderedList':
+              editor.chain().focus().toggleOrderedList().run()
+              break
+            case 'blockquote':
+              editor.chain().focus().toggleBlockquote().run()
+              break
+            case 'codeBlock':
+              editor.chain().focus().toggleCodeBlock().run()
+              break
+          }
+
+          updateActiveButtons()
+        })
+      })
+
+      function updateActiveButtons() {
+        const map = {
+          bold: () => editor.isActive('bold'),
+          italic: () => editor.isActive('italic'),
+          strike: () => editor.isActive('strike'),
+          code: () => editor.isActive('code'),
+          h1: () => editor.isActive('heading', { level: 1 }),
+          h2: () => editor.isActive('heading', { level: 2 }),
+          bulletList: () => editor.isActive('bulletList'),
+          orderedList: () => editor.isActive('orderedList'),
+          blockquote: () => editor.isActive('blockquote'),
+          codeBlock: () => editor.isActive('codeBlock'),
+        }
+
+        buttons.forEach((button) => {
+          const command = button.dataset.tiptapButton
+          const check = map[command]
+          if (check && check()) {
+            button.classList.add('is-active')
+          } else {
+            button.classList.remove('is-active')
+          }
+        })
+      }
+
+      // https://tiptap.dev/docs/editor/api/events
+      editor.on('selectionUpdate', updateActiveButtons)
+      editor.on('update', updateActiveButtons)
+      editor.on('create', _ => loadContent(editor))
+    </script>
+  </body>
+</html>
