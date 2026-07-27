@@ -17,15 +17,29 @@ import uuid
 THINGS_DIR = Path(__file__).parent / 'things'
 THING_ID_PATTERN = re.compile(r'^[0-9a-f]{6}$')
 
-app = flask.Flask(
-    __name__,
-    static_url_path='',
-    static_folder='static')
-
 def thing_id_to_path(thing_id):
   if not THING_ID_PATTERN.match(thing_id):
     flask.abort(400, "invalid thing_id.")
   return THINGS_DIR / thing_id
+
+IMGS_DIR = Path(__file__).parent / 'imgs'
+IMG_ID_PATTERN = re.compile(r'^[0-9a-f-]{36}.[a-z]{3,4}$')
+EXTENSIONS = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+}
+
+def img_id_to_path(img_id):
+  if not IMG_ID_PATTERN.match(img_id):
+    flask.abort(400, "invalid img_id.")
+  return IMGS_DIR / img_id
+
+app = flask.Flask(
+    __name__,
+    static_url_path='',
+    static_folder='static')
 
 @app.route("/")
 def serve_root():
@@ -69,6 +83,28 @@ def serve_things_post(thing_id):
     os.replace(tmp.name, thing_path)
 
   return {'thing_version': new_vesion}
+
+@app.post("/imgs")
+def serve_imgs_post():
+  file = flask.request.files["file"]
+
+  content_type = file.content_type
+  ext = EXTENSIONS.get(content_type)
+  if not ext:
+    flask.abort(400, "unknown content type.")
+
+  name = f"{uuid.uuid4()}.{ext}"
+  file.save(IMGS_DIR / name)
+  return {
+    "url": f"/imgs/{name}"
+  }
+
+@app.get("/imgs/<img_id>")
+def serve_imgs_get(img_id):
+  img_path = img_id_to_path(img_id)
+  if not img_path.exists():
+    flask.abort(404, "img not found.")
+  return flask.send_file(img_path)
 
 
 if __name__ == "__main__":

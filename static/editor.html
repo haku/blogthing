@@ -198,7 +198,6 @@
         markClean()
         setInterval(() => autosaveLoop(editor), 1000);
         editor.on('update', markDirty)
-        console.log('Autosave started.')
       }
 
       import { Editor } from 'https://esm.sh/@tiptap/core'
@@ -217,23 +216,37 @@
           FileHandler.configure({
             allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
             consumePasteEvent: true,
-            onPaste: (currentEditor, files, htmlContent) => {
-              files.forEach(file => {
-                const fileReader = new FileReader()
-                fileReader.readAsDataURL(file)
-                fileReader.onload = () => {
+            onPaste: async (currentEditor, files, htmlContent) => {
+              for (const file of files) {
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                  const resp = await fetch('/imgs', {
+                    method: 'POST',
+                    body: formData,
+                  });
+
+                  if (!resp.ok) {
+                    setMsg(`Upload failed: ${resp}`)
+                    return
+                  }
+
+                  const { url } = await resp.json();
                   currentEditor
                     .chain()
                     .insertContentAt(currentEditor.state.selection.anchor, {
                       type: 'image',
                       attrs: {
-                        src: fileReader.result,
+                        src: url,
                       },
                     })
                     .focus()
                     .run()
                 }
-              })
+                catch (err) {
+                  setMsg(`Insert image failed: ${resp}`)
+                }
+              }
             },
           }),
           Image.configure({
