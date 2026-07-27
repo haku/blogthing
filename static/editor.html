@@ -71,6 +71,7 @@
   <body>
     <div id="message">...</div>
     <div id="status">...</div>
+    <div id="info">...</div>
     <div class="editor-container">
       <div class="toolbar" id="toolbar">
         <button data-tiptap-button="bold">Bold</button>
@@ -83,6 +84,8 @@
         <button data-tiptap-button="orderedList">Ordered List</button>
         <button data-tiptap-button="blockquote">Blockquote</button>
         <button data-tiptap-button="codeBlock">Code Block</button>
+        <button data-tiptap-button="link">Link</button>
+        <button data-tiptap-button="unlink">Unlink</button>
       </div>
       <div id="editor"></div>
     </div>
@@ -190,7 +193,13 @@
 
       const editor = new Editor({
         element: document.querySelector('#editor'),
-        extensions: [StarterKit],
+        extensions: [
+          StarterKit.configure({
+            link: {
+              openOnClick: false,
+            },
+          }),
+        ],
       })
 
       // Wire up toolbar buttons
@@ -230,12 +239,20 @@
             case 'codeBlock':
               editor.chain().focus().toggleCodeBlock().run()
               break
+            case 'link':
+              let url = "https://fae.moe"
+              editor.chain().focus().setLink({href: url}).run()
+              break
+            case 'unlink':
+              editor.chain().focus().unsetLink().run()
+              break
           }
 
           updateActiveButtons()
         })
       })
 
+      let infoBox = document.getElementById('info');
       function updateActiveButtons() {
         const map = {
           bold: () => editor.isActive('bold'),
@@ -248,6 +265,7 @@
           orderedList: () => editor.isActive('orderedList'),
           blockquote: () => editor.isActive('blockquote'),
           codeBlock: () => editor.isActive('codeBlock'),
+          unlink: () => editor.isActive('link'),
         }
 
         buttons.forEach((button) => {
@@ -259,6 +277,12 @@
             button.classList.remove('is-active')
           }
         })
+
+        let info = "(info)"
+        if (map.unlink()) {
+          info = editor.getAttributes('link').href;
+        }
+        infoBox.textContent = info;
       }
 
       // https://tiptap.dev/docs/editor/api/events
