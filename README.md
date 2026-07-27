@@ -21,6 +21,7 @@ to make actually usable:
 
 bonus nice to have:
 
+* actual auth (SSO) ooh so fancy
 * https://tiptap.dev/docs/editor/extensions/functionality/focus
 * dark theme
 * way to see past versions
