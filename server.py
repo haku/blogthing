@@ -8,10 +8,10 @@ from pathlib import Path
 from typing import Dict
 import flask
 import json
+import hashlib
 import os
 import re
 import tempfile
-import uuid
 
 
 THINGS_DIR = Path(__file__).parent / 'things'
@@ -23,7 +23,7 @@ def thing_id_to_path(thing_id):
   return THINGS_DIR / thing_id
 
 IMGS_DIR = Path(__file__).parent / 'imgs'
-IMG_ID_PATTERN = re.compile(r'^[0-9a-f-]{36}.[a-z]{3,4}$')
+IMG_ID_PATTERN = re.compile(r'^[0-9a-f]{40}.[a-z]{3,4}$')
 EXTENSIONS = {
     "image/jpeg": "jpg",
     "image/png": "png",
@@ -93,8 +93,14 @@ def serve_imgs_post():
   if not ext:
     flask.abort(400, "unknown content type.")
 
-  name = f"{uuid.uuid4()}.{ext}"
-  file.save(IMGS_DIR / name)
+  sha1 = hashlib.sha1(file.read()).hexdigest()
+  name = f"{sha1}.{ext}"
+  img_path = IMGS_DIR / name
+
+  if not img_path.exists():
+    file.seek(0)
+    file.save(img_path)
+
   return {
     "url": f"/imgs/{name}"
   }
