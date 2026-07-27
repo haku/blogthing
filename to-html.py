@@ -30,5 +30,14 @@ renderer = tiptapy.BaseDoc(Config)
 path = THINGS_DIR / "123456"
 json = json.loads(path.read_text())
 fix_json(json)
-out = renderer.render(json)
-print(out)
+rendered = renderer.render(json)
+print(f"""
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+{rendered}
+</body>
+</html>
+""")
