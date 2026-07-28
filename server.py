@@ -5,7 +5,7 @@
 import flask
 import json
 
-import fs_storage
+import db_storage
 
 
 EXTENSIONS = {
@@ -15,7 +15,7 @@ EXTENSIONS = {
     "image/gif": "gif",
 }
 
-store = fs_storage.FsStorage()
+store = db_storage.DbStorage()
 
 app = flask.Flask(
     __name__,
@@ -25,6 +25,22 @@ app = flask.Flask(
 @app.route("/")
 def serve_root():
   return "i am a server desu~"
+
+@app.post("/things")
+def serve_things_root_post():
+  if not flask.request.headers.get("Content-Type") == "application/json":
+    flask.abort(400, "invalid content_type.")
+
+  raw_body = flask.request.get_data(as_text=True)
+  body = json.loads(raw_body)
+  if not "action" in body:
+    flask.abort(400, "missing action.")
+
+  match body["action"]:
+    case "new":
+      return store.thing_new_id()
+    case _:
+      flask.abort(400, "unknown action.")
 
 @app.get("/things/<thing_id>")
 def serve_things_get(thing_id):
@@ -54,6 +70,7 @@ def serve_imgs_get(img_id):
 
 @app.post("/imgs")
 def serve_imgs_post():
+  # TODO enforce max length etc
   file = flask.request.files["file"]
 
   content_type = file.content_type
@@ -68,4 +85,4 @@ def serve_imgs_post():
 
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0")
+  app.run(host="0.0.0.0", port=9456)

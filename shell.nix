@@ -27,6 +27,8 @@ pkgs.mkShell {
       (pkgs.callPackage tiptapy {})
       flask
       gunicorn
+      psycopg
+      psycopg-pool
     ]))
   ];
 }

@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blogthing</title>
+    </style>
+  </head>
+  <body>
+    <div>
+      <button id="new_thing">New Thing</button>
+    </div>
+    <div id="thinglist">
+    </div>
+
+    <script type="module">
+      let newBtn = document.getElementById('new_thing');
+
+      function newThing() {
+        return fetch('/things', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({"action": "new"}),
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+          return response.json();
+        })
+        .then(data => {
+          const thing_id = data['thing_id'];
+          navigation.navigate(`/editor.html?thing_id=${thing_id}`)
+        })
+        .catch(error => {
+          console.error('Error making new thing:', error)
+        })
+      }
+
+      newBtn.addEventListener('click', newThing)
+    </script>
+  </body>
+</html>

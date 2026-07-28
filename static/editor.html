@@ -1,10 +1,10 @@
 <!doctype html>
 <!-- https://tiptap.dev/docs/editor/getting-started/install/vanilla-javascript#without-a-build-tool-cdn -->
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tiptap Editor</title>
+    <title>Blogthing</title>
     <style>
       body {
         margin: 2rem;
@@ -128,10 +128,26 @@
         msgBox.textContent = msg;
       }
 
+      function getThingId() {
+        const searchParams = new URLSearchParams(window.location.search);
+        const id = searchParams.get("thing_id")
+        if (!id.match(/^[0-9a-f]{1,10}$/)) {
+          setMsg("Invalid thing_id.")
+          return null
+        }
+        return id
+      }
+
+      const thing_id = getThingId()
       let thing_version = 0;
 
       function loadContent(editor) {
-        return fetch('/things/123456')
+        if (!thing_id) {
+          console.log("Skipping load as no thing_id.")
+          return
+        }
+
+        return fetch(`/things/${thing_id}`)
           .then(response => {
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             return response.json();
@@ -156,11 +172,16 @@
       }
 
       function saveContent(editor) {
+        if (!thing_id) {
+          console.log("Skipping save as no thing_id.")
+          return
+        }
+
         let json = editor.getJSON();
         json['thing_version'] = thing_version + 1;
         json['thing_date'] = dateBox.value;
 
-        return fetch('/things/123456', {
+        return fetch(`/things/${thing_id}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
