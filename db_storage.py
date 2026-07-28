@@ -25,15 +25,24 @@ class DbStorage:
     self.mk_tables()
 
 
-  def thing_check_id(self, thing_id):
-    if not THING_ID_PATTERN.match(thing_id):
-      flask.abort(400, "invalid thing_id.")
+  def thing_list(self):
+    with self.cursor() as cur:
+      cur.execute("SELECT id, version, updated, title FROM things ORDER BY updated DESC")
+      return [
+          {
+            "id": r[0],
+            "version": r[1],
+            "updated": int(r[2].timestamp()),
+            "title": r[3],
+          }
+          for r in cur
+      ]
 
   def thing_get(self, thing_id):
-    self.thing_check_id(thing_id)
+    self._thing_check_id(thing_id)
     with self.cursor() as cur:
-      res = cur.execute("SELECT content, version FROM things WHERE id=%s", (thing_id,))
-      row = res.fetchone()
+      cur.execute("SELECT content, version FROM things WHERE id=%s", (thing_id,))
+      row = cur.fetchone()
       if row is None:
         flask.abort(404, "thing not found.")
 
@@ -44,20 +53,20 @@ class DbStorage:
 
   def thing_new_id(self):
     with self.cursor() as cur:
-      res = cur.execute("INSERT INTO things (created) VALUES (%s) RETURNING id",
-                        (datetime.now(timezone.utc),))
-      row = res.fetchone()
+      cur.execute("INSERT INTO things (created) VALUES (%s) RETURNING id",
+                  (datetime.now(timezone.utc),))
+      row = cur.fetchone()
       if row is None:
         flask.abort(404, "inserting new thing failed.")
       new_id = str(row[0])
-      self.thing_check_id(new_id)
+      self._thing_check_id(new_id)
       return {"thing_id": new_id}
 
   def thing_write_update(self, thing_id, new_version, new_body):
-    self.thing_check_id(thing_id)
+    self._thing_check_id(thing_id)
     with self.cursor() as cur:
-      res = cur.execute("SELECT version FROM things WHERE id=%s", (thing_id,))
-      row = res.fetchone()
+      cur.execute("SELECT version FROM things WHERE id=%s", (thing_id,))
+      row = cur.fetchone()
       if row is None:
         flask.abort(404, "thing not found.")
 
@@ -69,6 +78,10 @@ class DbStorage:
       cur.execute(
           "UPDATE things SET version=%s, updated=%s, content=%s WHERE id=%s",
           (new_version, updated_time, new_body, thing_id))
+
+  def _thing_check_id(self, thing_id):
+    if not THING_ID_PATTERN.match(thing_id):
+      flask.abort(400, "invalid thing_id.")
 
 
   def img_get(self, img_id):

@@ -24,7 +24,11 @@ app = flask.Flask(
 
 @app.route("/")
 def serve_root():
-  return "i am a server desu~"
+  return flask.send_file("static/index.html")
+
+@app.get("/things")
+def serve_things_root_get():
+  return store.thing_list()
 
 @app.post("/things")
 def serve_things_root_post():
