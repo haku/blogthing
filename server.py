@@ -35,6 +35,7 @@ def serve_things_post(thing_id):
   if not flask.request.headers.get("Content-Type") == "application/json":
     flask.abort(400, "invalid content_type.")
   # TODO enforce max length etc
+  # TODO validate thing_version, thing_date
 
   raw_body = flask.request.get_data(as_text=True)
   body = json.loads(raw_body)
