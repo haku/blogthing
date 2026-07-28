@@ -277,6 +277,7 @@
           StarterKit.configure({
             link: {
               openOnClick: false,
+              defaultProtocol: 'https',
             },
           }),
           FileHandler.configure({
@@ -362,8 +363,16 @@
               editor.chain().focus().toggleCodeBlock().run()
               break
             case 'link':
-              let url = "https://fae.moe"
-              editor.chain().focus().setLink({href: url}).run()
+              const prev = editor.getAttributes('link').href
+              const url = prompt("URL:", prev)
+              if (url) {
+                if (prev) {
+                  editor.chain().focus().extendMarkRange('link').setLink({href: url}).run()
+                }
+                else {
+                  editor.chain().focus().setLink({href: url}).run()
+                }
+              }
               break
             case 'unlink':
               editor.chain().focus().unsetLink().run()
@@ -386,6 +395,7 @@
           orderedList: () => editor.isActive('orderedList'),
           blockquote: () => editor.isActive('blockquote'),
           codeBlock: () => editor.isActive('codeBlock'),
+          link: () => editor.isActive('link'),
           unlink: () => editor.isActive('link'),
         }
 
@@ -400,7 +410,7 @@
         })
 
         let info = "(info)"
-        if (map.unlink()) {
+        if (map.link()) {
           info = editor.getAttributes('link').href;
         }
         infoBox.textContent = info;

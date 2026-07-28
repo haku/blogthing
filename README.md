@@ -2,7 +2,7 @@
 
 bare minimum bits needed to test if this is even possible and maybe worth the effort:
 
-* [ ] finish link handling
+* [x] finish link handling
   * use prompt() see https://tiptap.dev/docs/editor/extensions/nodes/mathematics for example
 * [x] image handling
   * https://tiptap.dev/docs/editor/extensions/functionality/filehandler
