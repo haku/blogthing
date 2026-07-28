@@ -13,6 +13,7 @@ import fs_storage
 
 
 THING_ID_PATTERN = re.compile(r'^[0-9a-f]{1,10}$')
+IMG_ID_PATTERN = re.compile(r'^[0-9a-f]{64}.[a-z]{3,4}$')
 
 class DbStorage:
 
@@ -85,11 +86,38 @@ class DbStorage:
 
 
   def img_get(self, img_id):
-    return self.fs_store.img_get(img_id)
+    self._img_check_id(img_id)
+    img_id = img_id.rsplit(".", 1)[0]
+
+    with self.cursor() as cur:
+      cur.execute("SELECT type, data FROM imgs WHERE id=%s", (img_id,))
+      row = cur.fetchone()
+    if row is None:
+      flask.abort(404, "img not found.")
+
+    if flask.request.if_none_match.contains(img_id):
+      return flask.Response(status=304)
+
+    content_type, data = row
+    resp = flask.Response(data, mimetype=content_type)
+    resp.set_etag(img_id)
+    resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+    return resp
 
   def img_write_new(self, file, content_type, extension):
-    return self.fs_store.img_write_new(file, content_type, extension)
+    data = file.read()
+    img_id = hashlib.sha256(data).hexdigest()
+    file.seek(0)
+    with self.cursor() as cur:
+      cur.execute("INSERT INTO imgs (id, created, type, data) "
+                  "VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO NOTHING",
+                  (img_id, datetime.now(timezone.utc),
+                   content_type, data))
+    return f"{img_id}.{extension}"
 
+  def _img_check_id(self, img_id):
+    if not IMG_ID_PATTERN.match(img_id):
+      flask.abort(400, "invalid img_id.")
 
   @contextmanager
   def cursor(self):
@@ -108,4 +136,12 @@ class DbStorage:
           "updated TIMESTAMP WITH TIME ZONE,"
           "title CHARACTER VARYING(500),"
           "content TEXT"
+          ")")
+      cur.execute(
+          "CREATE TABLE IF NOT EXISTS imgs ("
+          "id CHARACTER VARYING(64) PRIMARY KEY,"
+          "created TIMESTAMP WITH TIME ZONE NOT NULL,"
+          "type TEXT NOT NULL,"
+          "data BYTEA NOT NULL,"
+          "thumb BYTEA"
           ")")
