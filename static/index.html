@@ -62,7 +62,7 @@
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${t.id}`)
             row.querySelector("h3").textContent = t.title || "Untitled"
-            row.querySelector("p").textContent = `${t.id}: v${t.version} ${formatTimestamp(t.updated)}`
+            row.querySelector("p").textContent = `${t.id}: v${t.version} modified ${formatTimestamp(t.updated)}`
             thingList.append(row)
           }
         })
