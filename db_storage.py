@@ -9,7 +9,7 @@ import json
 import os
 import re
 
-import fs_storage
+from filetypes import TYPE_TO_EXTENSION
 
 
 THING_ID_PATTERN = re.compile(r'^[0-9a-f]{1,10}$')
@@ -22,7 +22,6 @@ class DbStorage:
         f"dbname=blogthing",
         check=ConnectionPool.check_connection,
         kwargs={"autocommit": True})
-    self.fs_store = fs_storage.FsStorage()
     self.mk_tables()
 
   def close(self):
@@ -87,6 +86,19 @@ class DbStorage:
     if not THING_ID_PATTERN.match(thing_id):
       flask.abort(400, "invalid thing_id.")
 
+  def img_list(self):
+    with self.cursor() as cur:
+      cur.execute("SELECT id, created, type, length(data) FROM imgs ORDER BY created DESC")
+      return [
+          {
+            "id": r[0],
+            "extension": TYPE_TO_EXTENSION[r[2]],
+            "created": int(r[1].timestamp()),
+            "type": r[2],
+            "size": r[3],
+          }
+          for r in cur
+      ]
 
   def img_get(self, img_id):
     self._img_check_id(img_id)

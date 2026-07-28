@@ -5,15 +5,9 @@
 import flask
 import json
 
+from filetypes import TYPE_TO_EXTENSION
 import db_storage
 
-
-EXTENSIONS = {
-    "image/jpeg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-    "image/gif": "gif",
-}
 
 store = db_storage.DbStorage()
 
@@ -70,6 +64,10 @@ def serve_things_post(thing_id):
   store.thing_write_update(thing_id, new_version, title, raw_body)
   return {'thing_version': new_vesion}
 
+@app.get("/imgs")
+def serve_imgs_root_get():
+  return store.img_list()
+
 @app.get("/imgs/<img_id>")
 def serve_imgs_get(img_id):
   return store.img_get(img_id)
@@ -80,7 +78,7 @@ def serve_imgs_post():
   file = flask.request.files["file"]
 
   content_type = file.content_type
-  ext = EXTENSIONS.get(content_type)
+  ext = TYPE_TO_EXTENSION.get(content_type)
   if not ext:
     flask.abort(400, "unknown content type.")
 
