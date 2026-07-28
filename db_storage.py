@@ -25,6 +25,9 @@ class DbStorage:
     self.fs_store = fs_storage.FsStorage()
     self.mk_tables()
 
+  def close(self):
+    self.db_pool.close()
+
 
   def thing_list(self):
     with self.cursor() as cur:

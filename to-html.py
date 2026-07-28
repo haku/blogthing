@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 import tiptapy
 
-THINGS_DIR = Path(__file__).parent / 'things'
+import db_storage
 
 def fix_dict(d):
   for k, v in d.copy().items():
@@ -22,23 +22,20 @@ def fix_json(j):
   elif isinstance(j, list):
     fix_list(j)
 
-def find_title(j):
-  for c in j['content']:
-    if c['type'] == 'heading':
-      return ''.join([v['text'] for v in c['content']])
-  return "Untitled"
-
-
 class Config:
   DOMAIN = "example.org"
 
 renderer = tiptapy.BaseDoc(Config)
-path = THINGS_DIR / "123456"
-json = json.loads(path.read_text())
-fix_json(json)
 
-title = find_title(json)
-rendered = renderer.render(json)
+store = db_storage.DbStorage()
+doc = store.thing_get("1")
+doc = json.loads(doc.data)
+store.close()
+
+fix_json(doc)
+
+title = doc['thing_title']
+rendered = renderer.render(doc)
 
 print(f"""
 <!doctype html>
