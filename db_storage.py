@@ -82,6 +82,12 @@ class DbStorage:
           "UPDATE things SET version=%s, updated=%s, title=%s, content=%s WHERE id=%s",
           (new_version, updated_time, title, body, thing_id))
 
+    # TODO
+    # check time since last archived version > 1 minute
+    # append to versions
+    # run cleanup
+    # log how long cleanup took, dont worry about optimising until its slow
+
   def _thing_check_id(self, thing_id):
     if not THING_ID_PATTERN.match(thing_id):
       flask.abort(400, "invalid thing_id.")
@@ -142,6 +148,7 @@ class DbStorage:
           yield cur
 
   def mk_tables(self):
+    # TODO at some point going to want some indexes
     with self.cursor() as cur:
       cur.execute(
           "CREATE TABLE IF NOT EXISTS things ("
@@ -160,3 +167,11 @@ class DbStorage:
           "data BYTEA NOT NULL,"
           "thumb BYTEA"
           ")")
+
+#CREATE TABLE IF NOT EXISTS versions (
+#  thing_id INTEGER NOT NULL,
+#  version INTEGER NOT NULL,
+#  created TIMESTAMP WITH TIME ZONE NOT NULL,
+#  content TEXT
+#  UNIQUE (thing_id, version)
+#  )

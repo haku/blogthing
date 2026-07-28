@@ -26,3 +26,4 @@ bonus nice to have:
 * [ ] store and show past versions
 * [ ] actual auth (SSO) ooh so fancy
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/focus
+* [ ] concurrent editing?
