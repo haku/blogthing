@@ -7,15 +7,16 @@ bare minimum bits needed to test if this is even possible and maybe worth the ef
 * [x] image handling
   * https://tiptap.dev/docs/editor/extensions/functionality/filehandler
   * https://tiptap.dev/docs/editor/extensions/nodes/image
-* [x] post title... just take first row of text?
-* [ ] process to converting JSON to HTML reliably with tiptapy
+  * in DB
+* [ ] post title... just take first row of text?
+* [x] process to converting JSON to HTML reliably with tiptapy
 * [ ] serve the result
 
 to make actually usable:
 
-* [ ] proper way to create new posts, list posts, etc
-* [ ] way to mark ready to publish etc
+* [x] proper way to create new posts, list posts, etc
 * [ ] use postgres to store content
+* [ ] way to mark ready to publish etc
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
 
 bonus nice to have:
