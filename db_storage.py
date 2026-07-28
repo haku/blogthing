@@ -62,7 +62,7 @@ class DbStorage:
       self._thing_check_id(new_id)
       return {"thing_id": new_id}
 
-  def thing_write_update(self, thing_id, new_version, new_body):
+  def thing_write_update(self, thing_id, new_version, title, body):
     self._thing_check_id(thing_id)
     with self.cursor() as cur:
       cur.execute("SELECT version FROM things WHERE id=%s", (thing_id,))
@@ -76,8 +76,8 @@ class DbStorage:
 
       updated_time = datetime.now(timezone.utc)
       cur.execute(
-          "UPDATE things SET version=%s, updated=%s, content=%s WHERE id=%s",
-          (new_version, updated_time, new_body, thing_id))
+          "UPDATE things SET version=%s, updated=%s, title=%s, content=%s WHERE id=%s",
+          (new_version, updated_time, title, body, thing_id))
 
   def _thing_check_id(self, thing_id):
     if not THING_ID_PATTERN.match(thing_id):

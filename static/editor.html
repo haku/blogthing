@@ -171,6 +171,18 @@
           })
       }
 
+      function extractTitle(editor) {
+        let title = null;
+        editor.state.doc.descendants((node) => {
+          if (title === null && node.type.name === "heading") {
+            title = node.textContent.trim();
+            return false;
+          }
+          return true;
+        });
+        return title;
+      }
+
       function saveContent(editor) {
         if (!thing_id) {
           console.log("Skipping save as no thing_id.")
@@ -180,6 +192,7 @@
         let json = editor.getJSON();
         json['thing_version'] = thing_version + 1;
         json['thing_date'] = dateBox.value;
+        json['thing_title'] = extractTitle(editor)
 
         return fetch(`/things/${thing_id}`, {
           method: 'POST',

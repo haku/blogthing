@@ -65,7 +65,9 @@ def serve_things_post(thing_id):
     flask.abort(400, "missing thing_version.")
   new_vesion = int(new_version)
 
-  store.thing_write_update(thing_id, new_version, raw_body)
+  title = body.get('thing_title')
+
+  store.thing_write_update(thing_id, new_version, title, raw_body)
   return {'thing_version': new_vesion}
 
 @app.get("/imgs/<img_id>")
