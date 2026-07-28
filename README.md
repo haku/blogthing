@@ -23,6 +23,6 @@ bonus nice to have:
 
 * [ ] dark theme
 * [ ] nicer menus https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
-* [ ] way to see past versions
+* [ ] store and show past versions
 * [ ] actual auth (SSO) ooh so fancy
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/focus
