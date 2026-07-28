@@ -169,6 +169,9 @@
       function updateStatusBox() {
         statusBox.textContent = saving ? 'saving' : dirty ? 'dirty' : 'clean';
       }
+      function safeToExit() {
+        return dirty === false && saving === false;
+      }
       function markDirty() {
         if (lastSave === 0) lastSave = Date.now();
         dirty = true;
@@ -205,6 +208,10 @@
         markClean()
         setInterval(() => autosaveLoop(editor), 1000);
         editor.on('update', markDirty)
+
+        window.addEventListener('beforeunload', (event) => {
+          if (!safeToExit()) event.returnValue = "Discard unsaved changes?";
+        });
       }
 
       import { Editor } from 'https://esm.sh/@tiptap/core'
