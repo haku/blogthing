@@ -126,7 +126,7 @@
           })
           .then(data => {
             thing_version = data['thing_version']
-            editor.chain().focus().setContent(data).run()
+            editor.chain().setContent(data).setTextSelection(0).focus().run()
             setMsg(`Loaded version ${thing_version}.`)
           })
           .catch(error => {
