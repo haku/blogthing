@@ -23,7 +23,8 @@ bonus nice to have:
 
 * [ ] dark theme
 * [ ] nicer menus https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
-* [ ] store and show past versions
+* [x] store and show past versions
+* [ ] once enough data, some DB indexes
 * [ ] actual auth (SSO) ooh so fancy
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/focus
 * [ ] concurrent editing?
