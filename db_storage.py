@@ -116,7 +116,7 @@ class DbStorage:
           "  FROM ("
           "    SELECT version, row_number() OVER ("
           "      PARTITION BY date_trunc('hour', created)"
-          "      ORDER BY version DESC"
+          "      ORDER BY version ASC"
           "    ) AS rn"
           "    FROM versions"
           "    WHERE thing_id=%(id)s"
