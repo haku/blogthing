@@ -35,26 +35,17 @@
     </template>
 
     <script type="module">
+      import * as Misc from './misc.mjs'
+
       const newBtn = document.getElementById('new_thing')
       const thingList = document.querySelector('#thinglist ul')
-
-      function formatTimestamp(timestamp) {
-        const d = new Date(timestamp * 1000);
-        const pad = n => String(n).padStart(2, "0");
-        return `${d.getFullYear()}-${
-            pad(d.getMonth() + 1)}-${
-            pad(d.getDate())} ${
-            pad(d.getHours())}:${
-            pad(d.getMinutes())}:${
-            pad(d.getSeconds())}`;
-      }
 
       function loadThings() {
         const row_template = document.querySelector('#thingtemplate')
 
         fetch('/things')
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        .then(async response => {
+          await Misc.checkFetchResp(response)
           return response.json();
         })
         .then(data => {
@@ -62,7 +53,7 @@
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${t.id}`)
             row.querySelector("h3").textContent = t.title || "Untitled"
-            row.querySelector("p").textContent = `${t.id}: v${t.version} modified ${formatTimestamp(t.updated)}`
+            row.querySelector("p").textContent = `${t.id}: v${t.version} modified ${Misc.formatTimestamp(t.updated)}`
             thingList.append(row)
           }
         })

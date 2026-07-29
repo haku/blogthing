@@ -27,32 +27,22 @@
     </template>
 
     <script type="module">
-      const mediaList = document.querySelector('#medialist ul')
+      import * as Misc from './misc.mjs'
 
-      // TODO move to module and dedupe
-      function formatTimestamp(timestamp) {
-        const d = new Date(timestamp * 1000);
-        const pad = n => String(n).padStart(2, "0");
-        return `${d.getFullYear()}-${
-            pad(d.getMonth() + 1)}-${
-            pad(d.getDate())} ${
-            pad(d.getHours())}:${
-            pad(d.getMinutes())}:${
-            pad(d.getSeconds())}`;
-      }
+      const mediaList = document.querySelector('#medialist ul')
 
       function loadMedia() {
         const row_template = document.querySelector('#mediatemplate')
 
         fetch('/imgs')
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        .then(async response => {
+          await Misc.checkFetchResp(response)
           return response.json();
         })
         .then(data => {
           for (const t of data) {
             const row = row_template.content.cloneNode(true)
-            row.querySelector("p").textContent = `${t.size} bytes ${formatTimestamp(t.created)}`
+            row.querySelector("p").textContent = `${t.size} bytes ${Misc.formatTimestamp(t.created)}`
             row.querySelector("img").setAttribute("src", `/imgs/${t.id}.${t.extension}`)
             mediaList.append(row)
           }

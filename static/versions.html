@@ -27,6 +27,8 @@
     </template>
 
     <script type="module">
+      import * as Misc from './misc.mjs'
+
       const versionList = document.querySelector('#versionlist ul')
 
       function getThingId() {
@@ -39,17 +41,6 @@
         return id
       }
 
-      function formatTimestamp(timestamp) {
-        const d = new Date(timestamp * 1000);
-        const pad = n => String(n).padStart(2, "0");
-        return `${d.getFullYear()}-${
-            pad(d.getMonth() + 1)}-${
-            pad(d.getDate())} ${
-            pad(d.getHours())}:${
-            pad(d.getMinutes())}:${
-            pad(d.getSeconds())}`;
-      }
-
       function loadVersions(thing_id) {
         if (!thing_id) {
           console.log("Skipping load as no thing_id.")
@@ -59,15 +50,15 @@
         const row_template = document.querySelector('#versiontemplate')
 
         fetch(`/versions/${thing_id}`)
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        .then(async response => {
+          await Misc.checkFetchResp(response)
           return response.json();
         })
         .then(data => {
           for (const t of data) {
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${thing_id}&version=${t.version}`)
-            row.querySelector("p").textContent = `v${t.version} modified ${formatTimestamp(t.updated)} ${t.length} bytes`
+            row.querySelector("p").textContent = `v${t.version} modified ${Misc.formatTimestamp(t.updated)} ${t.length} bytes`
             versionList.append(row)
           }
         })
