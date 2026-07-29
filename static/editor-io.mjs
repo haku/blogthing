@@ -47,7 +47,7 @@ function loadContent(editor) {
       if (data.type)
         editor.chain().setContent(data).setTextSelection(0).focus().run()
 
-      Stts.setMsg(`Loaded v${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
+      //Stts.setMsg(`Loaded v${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
     })
     .catch(error => {
       console.error('Error fetching thing:', error)
@@ -87,7 +87,7 @@ function saveContent(editor) {
   })
   .then(data => {
     thing_version = data['thing_version'];
-    Stts.setMsg(`Saved v${thing_version}.`)
+    //Stts.setMsg(`Saved v${thing_version}.`)
   })
 }
 
