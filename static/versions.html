@@ -35,7 +35,7 @@
         const searchParams = new URLSearchParams(window.location.search);
         const id = searchParams.get("thing_id")
         if (!id.match(/^[0-9a-f]{1,10}$/)) {
-          setMsg("Invalid thing_id.")
+          console.log("Invalid thing_id.")
           return null
         }
         return id

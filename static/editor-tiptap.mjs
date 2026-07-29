@@ -28,7 +28,7 @@ const editor = new Editor({
             });
 
             if (!resp.ok) {
-              setMsg(`Upload failed: ${resp}`)
+              setErr(`Upload failed: ${resp}`)
               return
             }
 
@@ -45,7 +45,7 @@ const editor = new Editor({
               .run()
           }
           catch (err) {
-            setMsg(`Insert image failed: ${resp}`)
+            setErr(`Insert image failed: ${resp}`)
           }
         }
       },

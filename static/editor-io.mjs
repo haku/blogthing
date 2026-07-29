@@ -6,7 +6,7 @@ const searchParams = new URLSearchParams(window.location.search);
 function getParam(name, pattern) {
   const p = searchParams.get(name)
   if (p != null && !p.match(pattern)) {
-    Stts.setMsg(`Invalid ${name}.`)
+    Stts.setErr(`Invalid ${name}.`)
     return null
   }
   return p
@@ -51,7 +51,7 @@ function loadContent(editor) {
     })
     .catch(error => {
       console.error('Error fetching thing:', error)
-      Stts.setMsg(`Error fetching thing: ${error}`)
+      Stts.setErr(`Error fetching thing: ${error}`)
     })
     .then(_ => {
       // runs even if load fails.
@@ -124,7 +124,7 @@ async function autosaveLoop(editor) {
     catch (error) {
       console.error('Error saving thing:', error)
       markDirty();
-      Stts.setMsg(`Error saving thing: ${error}`)
+      Stts.setErr(`Error saving thing: ${error}`)
       // TODO backup retry loop?
     }
     finally {

@@ -60,6 +60,23 @@ input:invalid {
   color: #fff;
 }
 
+#msgpop {
+  position: absolute;
+  width: 100%;
+  height: 2em;
+  z-index: 10;
+  padding: 0.2em;
+  text-align: center;
+  align-content: center;
+  background: #f0f;
+  visibility: hidden;
+}
+.fadeout {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
+}
+
 .tiptap {
   padding: 0.75rem 1rem;
   border: 1px solid #d1d5db;
