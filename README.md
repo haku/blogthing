@@ -16,14 +16,15 @@ to make actually usable:
 
 * [x] proper way to create new posts, list posts, etc
 * [x] use postgres to store content
+* [x] store and show past versions
 * [ ] way to mark ready to publish etc
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
 
 bonus nice to have:
 
+* [ ] move duplicated code to modules, bit of a tidy up
 * [ ] dark theme
-* [ ] nicer menus https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
-* [x] store and show past versions
+* [ ] nicer menus / layout https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
 * [ ] once enough data, some DB indexes
 * [ ] actual auth (SSO) ooh so fancy
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/focus
