@@ -44,7 +44,9 @@ function loadContent(editor) {
       const date = data['thing_date'];
       if (date) dateBox.value = date;
 
-      editor.chain().setContent(data).setTextSelection(0).focus().run()
+      if (data.type)
+        editor.chain().setContent(data).setTextSelection(0).focus().run()
+
       Stts.setMsg(`Loaded version ${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
     })
     .catch(error => {
