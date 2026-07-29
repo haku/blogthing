@@ -6,27 +6,38 @@ function setStatus(version, stts) {
   statusBox.textContent = stts;
 }
 
-const msgpop = document.getElementById('msgpop')
+const msgBox = document.getElementById('pop-msg')
 let timerId = null
 
 function setMsg(msg, fade=true) {
   if (timerId) clearTimeout(timerId)
   timerId = null
 
-  msgpop.textContent = msg
-  msgpop.classList.remove('fadeout')
-  msgpop.style.visibility = 'visible'
+  msgBox.textContent = msg
+  msgBox.classList.remove('fadeout')
+  msgBox.style.visibility = 'visible'
 
-  if (fade) timerId = setTimeout(() => msgpop.classList.add('fadeout'), 2000)
+  if (fade) timerId = setTimeout(() => msgBox.classList.add('fadeout'), 2000)
 }
 
 function setErr(msg) {
   setMsg(msg, false)
 }
 
-const infoBox = document.getElementById('info');
-function setInfo(msg) {
-  infoBox.textContent = msg;
+const infoBox = document.getElementById('pop-info');
+function setInfo(msg, link=false) {
+  if (msg) {
+    if (link) {
+      infoBox.innerHTML = `<a href=${msg}>${msg}</a>`
+    }
+    else {
+      infoBox.textContent = msg
+    }
+    infoBox.style.visibility = 'visible'
+  }
+  else {
+    infoBox.style.visibility = 'hidden'
+  }
 }
 
 export { setMsg, setErr, setStatus, setInfo }

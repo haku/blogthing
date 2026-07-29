@@ -7,12 +7,6 @@
     <link rel="stylesheet" href="/editor.css">
   </head>
   <body>
-    <div id="info">...</div>
-    <div id="metadata">
-      <label for="thing_date">Date:</label>
-      <input type="text" id="thing_date" name="thing_date"
-        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
-    </div>
     <div class="editor-container">
       <div class="toolbar" id="toolbar">
         <div class="bar">
@@ -20,6 +14,11 @@
             <span id="version"></span>
             <span id="status"></span>
           </button>
+          <div id="metadata">
+            <label for="thing_date">Date:</label>
+            <input type="text" id="thing_date" name="thing_date"
+              pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
+          </div>
         </div>
         <div class="bar">
           <button data-tiptap-button="bold">B</button>
@@ -36,8 +35,9 @@
           <button data-tiptap-button="unlink">⛓️‍💥</button>
         </div>
       </div>
-      <div id="msgpop-wrapper">
-        <div id="msgpop"></div>
+      <div class="msgpop-wrapper">
+        <div id="pop-msg"  class="msgpop"></div>
+        <div id="pop-info" class="msgpop"></div>
       </div>
       <div id="editor"></div>
     </div>

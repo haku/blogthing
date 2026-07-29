@@ -143,11 +143,11 @@ function updateActiveButtons() {
     }
   })
 
-  let info = "(info)"
+  let info = null
   if (map.link()) {
     info = editor.getAttributes('link').href;
   }
-  Stts.setInfo(info);
+  Stts.setInfo(info, true);
 }
 
 function extractTitle() {
