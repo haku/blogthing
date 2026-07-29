@@ -1,0 +1,157 @@
+import { editor, extractTitle } from './editor-tiptap.mjs'
+import * as Misc from './misc.mjs'
+import * as Stts from './editor-status.mjs'
+
+const searchParams = new URLSearchParams(window.location.search);
+function getParam(name, pattern) {
+  const p = searchParams.get(name)
+  if (p != null && !p.match(pattern)) {
+    Stts.setMsg(`Invalid ${name}.`)
+    return null
+  }
+  return p
+}
+
+const LOAD_VERSION = getParam("version", /^[0-9]{1,10}$/)
+const THING_ID     = getParam('thing_id', /^[0-9a-f]{1,10}$/)
+
+const dateBox = document.getElementById('thing_date');
+let thing_version = 0
+
+function loadContent(editor) {
+  if (!THING_ID) {
+    console.log("Skipping load as no thing_id.")
+    return
+  }
+
+  const path = LOAD_VERSION == null
+    ? `/things/${THING_ID}`
+    : `/versions/${THING_ID}/${LOAD_VERSION}`
+
+  if (LOAD_VERSION != null) {
+    editor.setEditable(false, false)
+    dateBox.disabled = true
+  }
+
+  return fetch(path)
+    .then(async response => {
+      await Misc.checkFetchResp(response)
+      return response.json();
+    })
+    .then(data => {
+      thing_version = data['thing_version']
+
+      const date = data['thing_date'];
+      if (date) dateBox.value = date;
+
+      editor.chain().setContent(data).setTextSelection(0).focus().run()
+      Stts.setMsg(`Loaded version ${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
+    })
+    .catch(error => {
+      console.error('Error fetching thing:', error)
+      Stts.setMsg(`Error fetching thing: ${error}`)
+    })
+    .then(_ => {
+      // runs even if load fails.
+      startAutosaveLoop(editor)
+    })
+}
+
+function saveContent(editor) {
+  if (LOAD_VERSION != null) {
+    console.log("Skipping save as load_version is set.")
+    return
+  }
+  if (!THING_ID) {
+    console.log("Skipping save as no thing_id.")
+    return
+  }
+
+  const json = editor.getJSON();
+  json['thing_version'] = thing_version + 1;
+  json['thing_date'] = dateBox.value;
+  json['thing_title'] = extractTitle(editor)
+
+  return fetch(`/things/${THING_ID}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(json),
+  })
+  .then(async response => {
+    await Misc.checkFetchResp(response)
+    return response.json();
+  })
+  .then(data => {
+    thing_version = data['thing_version'];
+    Stts.setMsg(`Saved as version ${thing_version}.`)
+  })
+}
+
+const SAVE_INTERVAL = 10000;
+let dirty = false;
+let saving = false;
+let lastSave = 0;
+
+function updateStatusBox() {
+  Stts.setStatus(saving ? 'saving' : dirty ? 'dirty' : 'clean')
+}
+function safeToExit() {
+  return dirty === false && saving === false;
+}
+function markDirty() {
+  if (lastSave === 0) lastSave = Date.now();
+  dirty = true;
+  updateStatusBox();
+}
+function markClean() {
+  dirty = false;
+  updateStatusBox();
+}
+
+async function autosaveLoop(editor) {
+  if (dirty && !saving && Date.now() - lastSave >= SAVE_INTERVAL) {
+    saving = true;
+    markClean();
+
+    try {
+      await saveContent(editor);
+      lastSave = Date.now();
+    }
+    catch (error) {
+      console.error('Error saving thing:', error)
+      markDirty();
+      Stts.setMsg(`Error saving thing: ${error}`)
+      // TODO backup retry loop?
+    }
+    finally {
+      saving = false;
+      updateStatusBox();
+    }
+  }
+}
+
+function startAutosaveLoop(editor) {
+  if (LOAD_VERSION != null) {
+    console.log("Not starting autosave as load_version is set.")
+    return
+  }
+
+  markClean()
+  setInterval(() => autosaveLoop(editor), 1000);
+
+  editor.on('update', markDirty)
+  dateBox.addEventListener('input', markDirty)
+
+  window.addEventListener('beforeunload', (event) => {
+    if (!safeToExit()) event.returnValue = "Discard unsaved changes?";
+  });
+}
+
+function start() {
+  editor.on('create', _ => loadContent(editor))
+}
+
+
+export { THING_ID, LOAD_VERSION, start }

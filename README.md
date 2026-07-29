@@ -22,7 +22,7 @@ to make actually usable:
 
 bonus nice to have:
 
-* [ ] move duplicated code to modules, bit of a tidy up
+* [x] move duplicated code to modules, bit of a tidy up
 * [ ] dark theme
 * [ ] nicer menus / layout https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
 * [ ] once enough data, some DB indexes
