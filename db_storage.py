@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from datetime import datetime
+from datetime import timedelta
 from datetime import timezone
 from pathlib import Path
 from psycopg_pool import ConnectionPool
@@ -8,6 +9,7 @@ import hashlib
 import json
 import os
 import re
+import time
 
 from filetypes import TYPE_TO_EXTENSION
 
@@ -57,7 +59,7 @@ class DbStorage:
   def thing_new_id(self):
     with self.cursor() as cur:
       cur.execute("INSERT INTO things (created) VALUES (%s) RETURNING id",
-                  (datetime.now(timezone.utc),))
+                  (self._now(),))
       row = cur.fetchone()
       if row is None:
         flask.abort(404, "inserting new thing failed.")
@@ -77,20 +79,66 @@ class DbStorage:
       if new_version <= existing_version:
         flask.abort(400, f"new version {new_version} <= existing version {existing_version}.")
 
-      updated_time = datetime.now(timezone.utc)
+      now = self._now()
       cur.execute(
           "UPDATE things SET version=%s, updated=%s, title=%s, content=%s WHERE id=%s",
-          (new_version, updated_time, title, body, thing_id))
+          (new_version, now, title, body, thing_id))
 
-    # TODO
-    # check time since last archived version > 1 minute
-    # append to versions
-    # run cleanup
-    # log how long cleanup took, dont worry about optimising until its slow
+    self._versions_add(thing_id, new_version, now, body)
+
+  def _versions_add(self, thing_id, version, created, body):
+    start = time.monotonic()
+    with self.cursor() as cur:
+      cur.execute("SELECT max(created) FROM versions WHERE thing_id=%s", (thing_id,))
+      row = cur.fetchone()
+      prev_created = row[0] if row is not None else None
+      if prev_created is not None and self._now() - prev_created < timedelta(minutes=1):
+        return
+      cur.execute("INSERT INTO versions (thing_id, version, created, content) "
+                  "VALUES (%s, %s, %s, %s)", (thing_id, version, created, body))
+    vers = self._versions_prune(thing_id)
+    print(f"Updated versions for thing={thing_id} in {round(time.monotonic() - start, 3)}s, "
+          f"pruned: {vers}.")
+
+  def _versions_prune(self, thing_id):
+    with self.cursor() as cur:
+      # TODO make newest > 10 after testing
+      cur.execute(
+          "WITH newest AS ("
+          "  SELECT version"
+          "  FROM versions"
+          "  WHERE thing_id=%(id)s"
+          "  ORDER BY version DESC"
+          "  LIMIT 10"
+          "),"
+          "hourly AS ("
+          "  SELECT version"
+          "  FROM ("
+          "    SELECT version, row_number() OVER ("
+          "      PARTITION BY date_trunc('hour', created)"
+          "      ORDER BY version DESC"
+          "    ) AS rn"
+          "    FROM versions"
+          "    WHERE thing_id=%(id)s"
+          "    AND version < (SELECT min(version) FROM newest)"
+          "  )"
+          "  WHERE rn = 1"
+          ")"
+          "DELETE FROM versions"
+          "  WHERE thing_id=%(id)s"
+          "  AND version NOT IN ("
+          "    SELECT version FROM newest"
+          "    UNION"
+          "    SELECT version FROM hourly"
+          "  )"
+          "RETURNING version",
+          {"id": thing_id})
+      return [r[0] for r in cur]
 
   def _thing_check_id(self, thing_id):
     if not THING_ID_PATTERN.match(thing_id):
       flask.abort(400, "invalid thing_id.")
+
 
   def img_list(self):
     with self.cursor() as cur:
@@ -132,13 +180,15 @@ class DbStorage:
     with self.cursor() as cur:
       cur.execute("INSERT INTO imgs (id, created, type, data) "
                   "VALUES (%s, %s, %s, %s) ON CONFLICT (id) DO NOTHING",
-                  (img_id, datetime.now(timezone.utc),
-                   content_type, data))
+                  (img_id, self._now(), content_type, data))
     return f"{img_id}.{extension}"
 
   def _img_check_id(self, img_id):
     if not IMG_ID_PATTERN.match(img_id):
       flask.abort(400, "invalid img_id.")
+
+  def _now(self):
+    return datetime.now(timezone.utc)
 
   @contextmanager
   def cursor(self):
@@ -160,6 +210,14 @@ class DbStorage:
           "content TEXT"
           ")")
       cur.execute(
+          "CREATE TABLE IF NOT EXISTS versions ("
+          "thing_id INTEGER NOT NULL,"
+          "version INTEGER NOT NULL,"
+          "created TIMESTAMP WITH TIME ZONE NOT NULL,"
+          "content TEXT,"
+          "UNIQUE (thing_id, version)"
+          ")")
+      cur.execute(
           "CREATE TABLE IF NOT EXISTS imgs ("
           "id CHARACTER VARYING(64) PRIMARY KEY,"
           "created TIMESTAMP WITH TIME ZONE NOT NULL,"
@@ -167,11 +225,3 @@ class DbStorage:
           "data BYTEA NOT NULL,"
           "thumb BYTEA"
           ")")
-
-#CREATE TABLE IF NOT EXISTS versions (
-#  thing_id INTEGER NOT NULL,
-#  version INTEGER NOT NULL,
-#  created TIMESTAMP WITH TIME ZONE NOT NULL,
-#  content TEXT
-#  UNIQUE (thing_id, version)
-#  )

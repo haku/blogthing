@@ -138,6 +138,12 @@
         return id
       }
 
+      async function checkFetchResp(resp) {
+        if (resp.ok) return
+        const body = await resp.text()  // TODO tidy / limit length / something
+        throw new Error(`HTTP error ${resp.status}: ${body}`)
+      }
+
       const thing_id = getThingId()
       let thing_version = 0;
 
@@ -148,8 +154,8 @@
         }
 
         return fetch(`/things/${thing_id}`)
-          .then(response => {
-            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+          .then(async response => {
+            await checkFetchResp(response)
             return response.json();
           })
           .then(data => {
@@ -201,8 +207,8 @@
           },
           body: JSON.stringify(json),
         })
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        .then(async response => {
+          await checkFetchResp(response)
           return response.json();
         })
         .then(data => {
