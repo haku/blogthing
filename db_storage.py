@@ -38,7 +38,7 @@ class DbStorage:
           {
             "id": r[0],
             "version": r[1],
-            "updated": int(r[2].timestamp()),
+            "updated": int(r[2].timestamp()) if r[2] else None,
             "title": r[3],
           }
           for r in cur
