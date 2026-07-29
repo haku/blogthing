@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blogthing</title>
+    <style>
+      #versionlist .version a {
+        display: block;
+      }
+      #versionlist .version p {
+        margin: 0.2em 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="versionlist">
+      <ul>
+      </ul>
+    </div>
+    <template id="versiontemplate">
+      <li class="version">
+        <a>
+          <p></p>
+        </a>
+      </li>
+    </template>
+
+    <script type="module">
+      const versionList = document.querySelector('#versionlist ul')
+
+      function getThingId() {
+        const searchParams = new URLSearchParams(window.location.search);
+        const id = searchParams.get("thing_id")
+        if (!id.match(/^[0-9a-f]{1,10}$/)) {
+          setMsg("Invalid thing_id.")
+          return null
+        }
+        return id
+      }
+
+      function formatTimestamp(timestamp) {
+        const d = new Date(timestamp * 1000);
+        const pad = n => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${
+            pad(d.getMonth() + 1)}-${
+            pad(d.getDate())} ${
+            pad(d.getHours())}:${
+            pad(d.getMinutes())}:${
+            pad(d.getSeconds())}`;
+      }
+
+      function loadVersions(thing_id) {
+        if (!thing_id) {
+          console.log("Skipping load as no thing_id.")
+          return
+        }
+
+        const row_template = document.querySelector('#versiontemplate')
+
+        fetch(`/versions/${thing_id}`)
+        .then(response => {
+          if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+          return response.json();
+        })
+        .then(data => {
+          for (const t of data) {
+            const row = row_template.content.cloneNode(true)
+            row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${thing_id}&version=${t.version}`)
+            row.querySelector("p").textContent = `v${t.version} modified ${formatTimestamp(t.updated)} ${t.length} bytes`
+            versionList.append(row)
+          }
+        })
+      }
+
+      const thing_id = getThingId()
+      loadVersions(thing_id)
+    </script>
+  </body>
+</html>

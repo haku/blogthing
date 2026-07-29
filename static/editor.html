@@ -92,6 +92,10 @@
     </style>
   </head>
   <body>
+    <div>
+      <a id="latest_link" href="" style="display: none;">Latest</a>
+      <a id="versions_link" href="">Versions</a>
+    </div>
     <div id="message">...</div>
     <div id="status">...</div>
     <div id="info">...</div>
@@ -119,6 +123,8 @@
     </div>
 
     <script type="module">
+      let latestLink = document.getElementById('latest_link');
+      let versionsLink = document.getElementById('versions_link');
       let msgBox = document.getElementById('message');
       let statusBox = document.getElementById('status');
       let infoBox = document.getElementById('info');
@@ -128,14 +134,22 @@
         msgBox.textContent = msg;
       }
 
-      function getThingId() {
+      function getThingIdAndVersion() {
         const searchParams = new URLSearchParams(window.location.search);
-        const id = searchParams.get("thing_id")
+        let id = searchParams.get("thing_id")
+        let ver = searchParams.get("version")
+
         if (!id.match(/^[0-9a-f]{1,10}$/)) {
           setMsg("Invalid thing_id.")
-          return null
+          id = null
         }
-        return id
+
+        if (ver != null && !ver.match(/^[0-9]{1,10}$/)) {
+          if (id != null) setMsg("Invalid version.")
+          ver = null
+        }
+
+        return [id, ver]
       }
 
       async function checkFetchResp(resp) {
@@ -144,8 +158,14 @@
         throw new Error(`HTTP error ${resp.status}: ${body}`)
       }
 
-      const thing_id = getThingId()
+      const [thing_id, load_version] = getThingIdAndVersion()
       let thing_version = 0;
+
+      if (load_version != null) {
+        latestLink.setAttribute("href", `/editor.html?thing_id=${thing_id}`)
+        latestLink.style.display = "initial"
+      }
+      versionsLink.setAttribute("href", `/versions.html?thing_id=${thing_id}`)
 
       function loadContent(editor) {
         if (!thing_id) {
@@ -153,7 +173,16 @@
           return
         }
 
-        return fetch(`/things/${thing_id}`)
+        const path = load_version == null
+          ? `/things/${thing_id}`
+          : `/versions/${thing_id}/${load_version}`
+
+        if (load_version != null) {
+          editor.setEditable(false, false)
+          dateBox.disabled = true
+        }
+
+        return fetch(path)
           .then(async response => {
             await checkFetchResp(response)
             return response.json();
@@ -165,7 +194,7 @@
             if (date) dateBox.value = date;
 
             editor.chain().setContent(data).setTextSelection(0).focus().run()
-            setMsg(`Loaded version ${thing_version}.`)
+            setMsg(`Loaded version ${thing_version}${load_version != null ? " (read-only)" : ""}.`)
           })
           .catch(error => {
             console.error('Error fetching thing:', error)
@@ -190,6 +219,10 @@
       }
 
       function saveContent(editor) {
+        if (load_version != null) {
+          console.log("Skipping save as load_version is set.")
+          return
+        }
         if (!thing_id) {
           console.log("Skipping save as no thing_id.")
           return
@@ -261,6 +294,11 @@
       }
 
       function startAutosaveLoop(editor) {
+        if (load_version != null) {
+          console.log("Not starting autosave as load_version is set.")
+          return
+        }
+
         markClean()
         setInterval(() => autosaveLoop(editor), 1000);
 

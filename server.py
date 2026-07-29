@@ -64,6 +64,14 @@ def serve_things_post(thing_id):
   store.thing_write_update(thing_id, new_version, title, raw_body)
   return {'thing_version': new_vesion}
 
+@app.get("/versions/<thing_id>")
+def serve_versions_list(thing_id):
+  return store.versions_list(thing_id)
+
+@app.get("/versions/<thing_id>/<version>")
+def serve_versions_get(thing_id, version):
+  return store.version_get(thing_id, version)
+
 @app.get("/imgs")
 def serve_imgs_root_get():
   return store.img_list()

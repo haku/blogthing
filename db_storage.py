@@ -15,6 +15,7 @@ from filetypes import TYPE_TO_EXTENSION
 
 
 THING_ID_PATTERN = re.compile(r'^[0-9a-f]{1,10}$')
+VERSION_PATTERN = re.compile(r'^[0-9a-f]{1,10}$')
 IMG_ID_PATTERN = re.compile(r'^[0-9a-f]{64}.[a-z]{3,4}$')
 
 class DbStorage:
@@ -86,6 +87,32 @@ class DbStorage:
 
     self._versions_add(thing_id, new_version, now, body)
 
+
+  def versions_list(self, thing_id):
+    with self.cursor() as cur:
+      cur.execute("SELECT version, created, length(content) FROM versions "
+                  "WHERE thing_id=%s "
+                  "ORDER BY created DESC", (thing_id,))
+      return [
+          {
+            "version": r[0],
+            "updated": int(r[1].timestamp()),
+            "length": r[2],
+          }
+          for r in cur
+      ]
+
+  def version_get(self, thing_id, version):
+    self._thing_check_id(thing_id)
+    self._version_check(version)
+    with self.cursor() as cur:
+      cur.execute("SELECT content FROM versions WHERE thing_id=%s AND version=%s",
+                  (thing_id, version))
+      row = cur.fetchone()
+      if row is None:
+        flask.abort(404, "thing version not found.")
+      return flask.Response(row[0], mimetype="application/json; charset=utf-8")
+
   def _versions_add(self, thing_id, version, created, body):
     start = time.monotonic()
     with self.cursor() as cur:
@@ -138,6 +165,10 @@ class DbStorage:
   def _thing_check_id(self, thing_id):
     if not THING_ID_PATTERN.match(thing_id):
       flask.abort(400, "invalid thing_id.")
+
+  def _version_check(self, version):
+    if not VERSION_PATTERN.match(version):
+      flask.abort(400, "invalid version.")
 
 
   def img_list(self):
