@@ -47,7 +47,7 @@ function loadContent(editor) {
       if (data.type)
         editor.chain().setContent(data).setTextSelection(0).focus().run()
 
-      Stts.setMsg(`Loaded version ${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
+      Stts.setMsg(`Loaded v${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
     })
     .catch(error => {
       console.error('Error fetching thing:', error)
@@ -87,7 +87,7 @@ function saveContent(editor) {
   })
   .then(data => {
     thing_version = data['thing_version'];
-    Stts.setMsg(`Saved as version ${thing_version}.`)
+    Stts.setMsg(`Saved v${thing_version}.`)
   })
 }
 
@@ -97,7 +97,7 @@ let saving = false;
 let lastSave = 0;
 
 function updateStatusBox() {
-  Stts.setStatus(saving ? 'saving' : dirty ? 'dirty' : 'clean')
+  Stts.setStatus(`v${thing_version}`, LOAD_VERSION ? '🕰' : saving ? '🗘' : dirty ? '●' : '✔')
 }
 function safeToExit() {
   return dirty === false && saving === false;
@@ -137,6 +137,7 @@ async function autosaveLoop(editor) {
 function startAutosaveLoop(editor) {
   if (LOAD_VERSION != null) {
     console.log("Not starting autosave as load_version is set.")
+    updateStatusBox()
     return
   }
 
