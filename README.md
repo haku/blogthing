@@ -33,3 +33,6 @@ bonus nice to have:
 * [ ] actual auth (SSO) ooh so fancy
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/focus
 * [ ] concurrent editing?
+* [ ] gzip/etc save POSTS?  oh this is much more complex than i thought.
+* [ ] save/restore cursor location?
+* [ ] custom block for raw html?
