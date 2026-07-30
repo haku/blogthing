@@ -22,7 +22,7 @@ const dateBox = document.getElementById('thing_date');
 let thing_version = 0
 let thing_published = false
 
-function loadContent(editor) {
+function loadContent() {
   if (!THING_ID) {
     console.log("Skipping load as no thing_id.")
     return
@@ -65,11 +65,11 @@ function loadContent(editor) {
     })
     .then(_ => {
       // runs even if load fails.
-      startAutosaveLoop(editor)
+      startAutosaveLoop()
     })
 }
 
-function saveContent(editor) {
+function saveContent() {
   if (LOAD_VERSION != null) {
     console.log("Skipping save as load_version is set.")
     return
@@ -103,8 +103,8 @@ function saveContent(editor) {
 }
 
 function updatePageTitle() {
-  const title = extractTitle(editor)
-  document.title = `${title} - Blogthing`
+  const title = extractTitle()
+  document.title = title != null ? `${title} - Blogthing` : "Blogthing"
   return title
 }
 
@@ -152,29 +152,45 @@ function markClean() {
   updateStatusBox();
 }
 
-async function autosaveLoop(editor) {
+async function autosaveLoop() {
   if (dirty && !saving && Date.now() - lastSave >= SAVE_INTERVAL) {
-    saving = true;
-    markClean();
-
-    try {
-      await saveContent(editor);
-      lastSave = Date.now();
-    }
-    catch (error) {
-      console.error('Error saving thing:', error)
-      markDirty();
-      Stts.setErr(`Error saving thing: ${error}`)
-      // TODO backup retry loop?
-    }
-    finally {
-      saving = false;
-      updateStatusBox();
-    }
+    await saveNow()
+    // TODO backoff retry loop on errors?
   }
 }
 
-function startAutosaveLoop(editor) {
+// returns true if it did something
+async function saveIfNeeded() {
+  if (!dirty) return false
+  await saveNow()
+  return true
+}
+
+async function saveNow() {
+  if (saving) {
+    console.log("Skipping save as save already in progress.")
+    return
+  }
+
+  saving = true;
+  markClean();
+
+  try {
+    await saveContent();
+    lastSave = Date.now();
+  }
+  catch (error) {
+    console.error('Error saving thing:', error)
+    markDirty();
+    Stts.setErr(`Error saving thing: ${error}`)
+  }
+  finally {
+    saving = false;
+    updateStatusBox();
+  }
+}
+
+function startAutosaveLoop() {
   if (LOAD_VERSION != null) {
     console.log("Not starting autosave as load_version is set.")
     updateStatusBox()
@@ -182,7 +198,7 @@ function startAutosaveLoop(editor) {
   }
 
   markClean()
-  setInterval(() => autosaveLoop(editor), 1000);
+  setInterval(autosaveLoop, 1000);
 
   editor.on('update', markDirty)
   dateBox.addEventListener('input', markDirty)
@@ -193,8 +209,8 @@ function startAutosaveLoop(editor) {
 }
 
 function start() {
-  editor.on('create', _ => loadContent(editor))
+  editor.on('create', loadContent)
 }
 
 
-export { THING_ID, LOAD_VERSION, start }
+export { THING_ID, LOAD_VERSION, start, saveIfNeeded }

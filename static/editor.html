@@ -60,7 +60,10 @@
       import * as EditorIO from './editor-io.mjs'
 
       const homeBtn = document.getElementById('home');
-      homeBtn.addEventListener('click', () => location.assign("/"))
+      homeBtn.addEventListener('click', async () => {
+        await EditorIO.saveIfNeeded()
+        location.assign("/")
+      })
 
       const mdBox = document.getElementById('metabox');
       const mdBtn = document.getElementById('metadata');
@@ -76,8 +79,9 @@
       })
 
       const versionsBtn = document.getElementById('versions');
-      // TODO if not saved, first click saves.  second click goes to versions.
-      versionsBtn.addEventListener('click', () => {
+      versionsBtn.addEventListener('click', async () => {
+        if (await EditorIO.saveIfNeeded()) return
+
         const path = EditorIO.LOAD_VERSION
           ? `/editor.html?thing_id=${EditorIO.THING_ID}`
           : `/versions.html?thing_id=${EditorIO.THING_ID}`
