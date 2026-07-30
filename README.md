@@ -36,3 +36,5 @@ bonus nice to have:
 * [ ] gzip/etc save POSTS?  oh this is much more complex than i thought.
 * [ ] save/restore cursor location?
 * [ ] custom block for raw html?
+* [ ] https://tiptap.dev/docs/editor/extensions/nodes/code-block-lowlight ?
+* [ ] https://tiptap.dev/docs/editor/extensions/nodes/task-list ?
