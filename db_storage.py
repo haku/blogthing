@@ -33,13 +33,14 @@ class DbStorage:
 
   def thing_list(self):
     with self.cursor() as cur:
-      cur.execute("SELECT id, version, updated, title FROM things ORDER BY updated DESC")
+      cur.execute("SELECT id, version, updated, title, published FROM things ORDER BY updated DESC")
       return [
           {
             "id": r[0],
             "version": r[1],
             "updated": int(r[2].timestamp()) if r[2] else None,
             "title": r[3],
+            "published": r[4],
           }
           for r in cur
       ]
@@ -68,7 +69,7 @@ class DbStorage:
       self._thing_check_id(new_id)
       return {"thing_id": new_id}
 
-  def thing_write_update(self, thing_id, new_version, title, body):
+  def thing_write_update(self, thing_id, new_version, published, title, body):
     self._thing_check_id(thing_id)
     with self.cursor() as cur:
       cur.execute("SELECT version FROM things WHERE id=%s", (thing_id,))
@@ -82,8 +83,8 @@ class DbStorage:
 
       now = self._now()
       cur.execute(
-          "UPDATE things SET version=%s, updated=%s, title=%s, content=%s WHERE id=%s",
-          (new_version, now, title, body, thing_id))
+          "UPDATE things SET version=%s, updated=%s, published=%s, title=%s, content=%s WHERE id=%s",
+          (new_version, now, published, title, body, thing_id))
 
     self._versions_add(thing_id, new_version, now, body)
 
@@ -237,9 +238,11 @@ class DbStorage:
           "version INTEGER NOT NULL DEFAULT 0,"
           "created TIMESTAMP WITH TIME ZONE NOT NULL,"
           "updated TIMESTAMP WITH TIME ZONE,"
+          "published BOOLEAN NOT NULL DEFAULT false,"
           "title CHARACTER VARYING(500),"
           "content TEXT"
           ")")
+      # ALTER TABLE things ADD COLUMN published BOOLEAN NOT NULL DEFAULT false;
       cur.execute(
           "CREATE TABLE IF NOT EXISTS versions ("
           "thing_id INTEGER NOT NULL,"

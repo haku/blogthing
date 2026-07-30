@@ -37,12 +37,30 @@ input:invalid {
   border-radius: 0.375rem 0.375rem 0 0;
 }
 
+.toolbar.published {
+  background: #cdffd0;
+}
+
 .toolbar .bar {
   display: flex;
   gap: 0.25rem;
   margin: 0.2rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.toolbar .subbar {
+  background: #d1d5db;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0.3rem;
+}
+.toolbar.published .subbar {
+  background: #aed8b1;
+}
+
+.toolbar .bar-hide {
+  display: none;
 }
 
 .toolbar button {

@@ -15,8 +15,12 @@ function getParam(name, pattern) {
 const LOAD_VERSION = getParam("version", /^[0-9]{1,10}$/)
 const THING_ID     = getParam('thing_id', /^[0-9a-f]{1,10}$/)
 
+const toolbarBox = document.getElementById('toolbar');
+const publishedBtn = document.getElementById('thing_published');
 const dateBox = document.getElementById('thing_date');
+
 let thing_version = 0
+let thing_published = false
 
 function loadContent(editor) {
   if (!THING_ID) {
@@ -40,6 +44,9 @@ function loadContent(editor) {
     })
     .then(data => {
       thing_version = data['thing_version']
+
+      if (data['thing_published']) thing_published = data['thing_published']
+      updatePublishedState()
 
       const date = data['thing_date'];
       if (date) dateBox.value = date;
@@ -71,6 +78,7 @@ function saveContent(editor) {
 
   const json = editor.getJSON();
   json['thing_version'] = thing_version + 1;
+  json['thing_published'] = thing_published
   json['thing_date'] = dateBox.value;
   json['thing_title'] = extractTitle(editor)
 
@@ -90,6 +98,27 @@ function saveContent(editor) {
     //Stts.setMsg(`Saved v${thing_version}.`)
   })
 }
+
+function updatePublishedState() {
+  publishedBtn.textContent = thing_published ? "Published" : "Unpublished"
+  if (thing_published) {
+    toolbarBox.classList.add('published')
+  }
+  else {
+    toolbarBox.classList.remove('published')
+  }
+}
+
+publishedBtn.addEventListener('click', () => {
+  const change_to = !thing_published
+  if (confirm(`Set published=${change_to}?`)) {
+    thing_published = change_to
+    updatePublishedState()
+    markDirty()
+    // TODO trigger save now
+  }
+})
+
 
 const SAVE_INTERVAL = 10000;
 let dirty = false;

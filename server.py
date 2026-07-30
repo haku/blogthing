@@ -49,7 +49,7 @@ def serve_things_post(thing_id):
   if not flask.request.headers.get("Content-Type") == "application/json":
     flask.abort(400, "invalid content_type.")
   # TODO enforce max length etc
-  # TODO validate thing_version, thing_date
+  # TODO validate thing_date
 
   raw_body = flask.request.get_data(as_text=True)
   body = json.loads(raw_body)
@@ -59,9 +59,13 @@ def serve_things_post(thing_id):
     flask.abort(400, "missing thing_version.")
   new_vesion = int(new_version)
 
+  published = body.get('thing_published')
+  if not isinstance(published, bool):
+    flask.abort(400, "missing or invalid thing_published.")
+
   title = body.get('thing_title')
 
-  store.thing_write_update(thing_id, new_version, title, raw_body)
+  store.thing_write_update(thing_id, new_version, published, title, raw_body)
   return {'thing_version': new_vesion}
 
 @app.get("/versions/<thing_id>")
