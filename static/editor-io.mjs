@@ -35,6 +35,7 @@ function loadContent(editor) {
   if (LOAD_VERSION != null) {
     editor.setEditable(false, false)
     dateBox.disabled = true
+    publishedBtn.disabled = true
   }
 
   return fetch(path)
@@ -110,6 +111,8 @@ function updatePublishedState() {
 }
 
 publishedBtn.addEventListener('click', () => {
+  if (LOAD_VERSION != null) return
+
   const change_to = !thing_published
   if (confirm(`Set published=${change_to}?`)) {
     thing_published = change_to
