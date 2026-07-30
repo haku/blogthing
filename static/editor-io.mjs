@@ -137,7 +137,11 @@ let saving = false;
 let lastSave = 0;
 
 function updateStatusBox() {
-  Stts.setStatus(`v${thing_version}`, LOAD_VERSION ? '🕰' : saving ? '🗘' : dirty ? '●' : '✔')
+  const state = LOAD_VERSION ? Stts.States.HISTORIC
+    : saving ? Stts.States.SAVING
+    : dirty ? Stts.States.UNSAVED
+    : Stts.States.SAVED
+  Stts.setState(`v${thing_version}`, state)
 }
 function safeToExit() {
   return dirty === false && saving === false;

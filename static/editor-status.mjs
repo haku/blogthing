@@ -1,9 +1,18 @@
 const versionBox = document.getElementById('version');
-const statusBox = document.getElementById('status');
+const statusBox = document.getElementById('state');
 
-function setStatus(version, stts) {
+const States = {
+  SAVED: Symbol.for("saved"),
+  UNSAVED: Symbol.for("unsaved"),
+  SAVING: Symbol.for("saving"),
+  HISTORIC: Symbol.for("historic"),
+}
+const ALL_STATES = Object.entries(States).map(([k, v]) => Symbol.keyFor(v))
+
+function setState(version, state) {
   versionBox.textContent = version;
-  statusBox.textContent = stts;
+  statusBox.classList.remove(...ALL_STATES)
+  statusBox.classList.add(Symbol.keyFor(state))
 }
 
 const msgBox = document.getElementById('pop-msg')
@@ -40,4 +49,4 @@ function setInfo(msg, link=false) {
   }
 }
 
-export { setMsg, setErr, setStatus, setInfo }
+export { setMsg, setErr, setState, States, setInfo }

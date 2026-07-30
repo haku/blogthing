@@ -14,12 +14,16 @@ input:invalid {
 #versions {
   text-wrap: nowrap;
 }
-#status {
+#state {
   display: inline-block;
   text-align: center;
   width: 1em;
   line-height: 100%;
 }
+#state.saved::before    { content: '✔'; }
+#state.unsaved::before  { content: '●'; color: #ff1717; }
+#state.saving::before   { content: '🗘'; color: #ff1717; }
+#state.historic::before { content: '🕰'; }
 
 .editor-container {
   max-width: 48rem;
