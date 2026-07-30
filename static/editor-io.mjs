@@ -55,6 +55,8 @@ function loadContent(editor) {
       if (data.type)
         editor.chain().setContent(data).setTextSelection(0).focus().run()
 
+      updatePageTitle()
+
       //Stts.setMsg(`Loaded v${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
     })
     .catch(error => {
@@ -81,7 +83,7 @@ function saveContent(editor) {
   json['thing_version'] = thing_version + 1;
   json['thing_published'] = thing_published
   json['thing_date'] = dateBox.value;
-  json['thing_title'] = extractTitle(editor)
+  json['thing_title'] = updatePageTitle()
 
   return fetch(`/things/${THING_ID}`, {
     method: 'POST',
@@ -98,6 +100,12 @@ function saveContent(editor) {
     thing_version = data['thing_version'];
     //Stts.setMsg(`Saved v${thing_version}.`)
   })
+}
+
+function updatePageTitle() {
+  const title = extractTitle(editor)
+  document.title = `${title} - Blogthing`
+  return title
 }
 
 function updatePublishedState() {
