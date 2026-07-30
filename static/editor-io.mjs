@@ -15,7 +15,7 @@ function getParam(name, pattern) {
 const LOAD_VERSION = getParam("version", /^[0-9]{1,10}$/)
 const THING_ID     = getParam('thing_id', /^[0-9a-f]{1,10}$/)
 
-const toolbarBox = document.getElementById('toolbar');
+const toolBox = document.getElementById('toolbox');
 const publishedBtn = document.getElementById('thing_published');
 const dateBox = document.getElementById('thing_date');
 
@@ -102,10 +102,10 @@ function saveContent(editor) {
 function updatePublishedState() {
   publishedBtn.textContent = thing_published ? "Published" : "Unpublished"
   if (thing_published) {
-    toolbarBox.classList.add('published')
+    toolBox.classList.add('published')
   }
   else {
-    toolbarBox.classList.remove('published')
+    toolBox.classList.remove('published')
   }
 }
 

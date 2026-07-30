@@ -8,39 +8,45 @@
   </head>
   <body>
     <div class="editor-container">
-      <div class="toolbar" id="toolbar">
-        <div class="bar">
-          <button id="home" style="font-weight: bold; width: 3em;">⌂</button>
-
-          <span style="flex-grow: 1;"></span>
-
-          <button id="metadata">📤</button>
-          <button id="versions">
-            <span id="version"></span>
-            <span id="status"></span>
-          </button>
-        </div>
-        <div id="metadata-bar" class="bar subbar bar-hide">
-          <div>
-            <label for="thing_date">Date:</label>
-            <input type="text" id="thing_date" name="thing_date"
-              pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
+      <div id="toolbox" class="toolbox">
+        <div class="toolbar">
+          <div class="bar left">
+            <button id="home" style="font-weight: bold; width: 3em;">⌂</button>
           </div>
-          <button id="thing_published">Unpublished</button>
+
+          <div class="bar center">
+            <button data-tiptap-button="bold">B</button>
+            <button data-tiptap-button="italic">I</button>
+            <button data-tiptap-button="strike">S</button>
+            <button data-tiptap-button="code">C</button>
+            <button data-tiptap-button="h1">H1</button>
+            <button data-tiptap-button="h2">H2</button>
+            <button data-tiptap-button="bulletList">•</button>
+            <button data-tiptap-button="orderedList">1</button>
+            <button data-tiptap-button="blockquote">&gt;"</button>
+            <button data-tiptap-button="codeBlock">&gt;C</button>
+            <button data-tiptap-button="link">🔗</button>
+            <button data-tiptap-button="unlink">⛓️‍💥</button>
+          </div>
+
+          <div class="bar right">
+            <button id="metadata">📤</button>
+            <button id="versions">
+              <span id="version"></span>
+              <span id="status"></span>
+            </button>
+          </div>
         </div>
-        <div class="bar">
-          <button data-tiptap-button="bold">B</button>
-          <button data-tiptap-button="italic">I</button>
-          <button data-tiptap-button="strike">S</button>
-          <button data-tiptap-button="code">C</button>
-          <button data-tiptap-button="h1">H1</button>
-          <button data-tiptap-button="h2">H2</button>
-          <button data-tiptap-button="bulletList">•</button>
-          <button data-tiptap-button="orderedList">1</button>
-          <button data-tiptap-button="blockquote">&gt;"</button>
-          <button data-tiptap-button="codeBlock">&gt;C</button>
-          <button data-tiptap-button="link">🔗</button>
-          <button data-tiptap-button="unlink">⛓️‍💥</button>
+
+        <div id="metabox" class="toolbar secondary bar-hide">
+          <div class="bar center">
+            <div>
+              <label for="thing_date">Date:</label>
+              <input type="text" id="thing_date" name="thing_date"
+                pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
+            </div>
+            <button id="thing_published">Unpublished</button>
+          </div>
         </div>
       </div>
       <div class="msgpop-wrapper">
@@ -56,15 +62,15 @@
       const homeBtn = document.getElementById('home');
       homeBtn.addEventListener('click', () => location.assign("/"))
 
+      const mdBox = document.getElementById('metabox');
       const mdBtn = document.getElementById('metadata');
-      const mdBar = document.getElementById('metadata-bar');
       mdBtn.addEventListener('click', () => {
-        if (mdBar.classList.contains('bar-hide')) {
-          mdBar.classList.remove('bar-hide')
+        if (mdBox.classList.contains('bar-hide')) {
+          mdBox.classList.remove('bar-hide')
           mdBtn.classList.add('is-active')
         }
         else {
-          mdBar.classList.add('bar-hide')
+          mdBox.classList.add('bar-hide')
           mdBtn.classList.remove('is-active')
         }
       })
