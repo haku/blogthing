@@ -26,6 +26,7 @@ pkgs.mkShell {
     (pkgs.python3.withPackages (python-pkgs: with python-pkgs; [
       (pkgs.callPackage tiptapy {})
       flask
+      flask-compress
       gunicorn
       psycopg
       psycopg-pool

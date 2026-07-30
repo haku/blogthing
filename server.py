@@ -3,6 +3,7 @@
 # run: $ gunicorn server:app
 
 import flask
+import flask_compress
 import json
 
 from filetypes import TYPE_TO_EXTENSION
@@ -15,6 +16,7 @@ app = flask.Flask(
     __name__,
     static_url_path='',
     static_folder='static')
+
 
 @app.route("/")
 def serve_root():
@@ -101,5 +103,6 @@ def serve_imgs_post():
 
 
 if __name__ == "__main__":
+  flask_compress.Compress().init_app(app)
   app.run(host="127.0.0.1", port=9456)
   store.close()
