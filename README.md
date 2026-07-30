@@ -22,6 +22,8 @@ to make actually usable:
 * [x] way to mark ready to publish etc
 * [ ] figure out what is going on with thing_date / sort-key / whatever
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
+* [ ] keyboard shortcuts
+* [ ] image alt text
 
 bonus nice to have:
 
