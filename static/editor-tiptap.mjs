@@ -8,7 +8,12 @@ import * as Stts from './editor-status.mjs'
 const editor = new Editor({
   element: document.querySelector('#editor'),
   extensions: [
+    // https://tiptap.dev/docs/editor/extensions/functionality/starterkit
     StarterKit.configure({
+      codeBlock: {
+        enableTabIndentation: true,
+        tabSize: 2,
+      },
       link: {
         openOnClick: false,
         defaultProtocol: 'https',
