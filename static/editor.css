@@ -45,7 +45,7 @@ input:invalid {
   display: flex;
   gap: 0.25rem;
   margin: 0.2rem;
-  flex-wrap: wrap;
+  overflow: scroll;
   justify-content: center;
 }
 
