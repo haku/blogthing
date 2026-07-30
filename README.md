@@ -18,9 +18,9 @@ to make actually usable:
 * [x] use postgres to store content
 * [x] store and show past versions
 * [x] editor view fits on screen nicely including mobile
-* [ ] some basic nav, like back to home from editor
+* [x] some basic nav, like back to home from editor
+* [x] way to mark ready to publish etc
 * [ ] figure out what is going on with thing_date / sort-key / whatever
-* [ ] way to mark ready to publish etc
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
 
 bonus nice to have:
