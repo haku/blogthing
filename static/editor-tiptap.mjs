@@ -31,6 +31,18 @@ const editor = new Editor({
         onUpdate: updateLinkBubbleMenu,
       },
     }),
+    BubbleMenu.configure({
+      pluginKey: 'list-bubble-menu',
+      element: document.querySelector('#list-bubble-menu'),
+      shouldShow: ({editor, view, state, oldState, from, to}) => {
+        const { $from } = editor.state.selection
+        return (editor.isActive('bulletList') || editor.isActive('orderedList')) &&
+          state.selection.empty && $from.parentOffset === 0
+      },
+      options: {
+        placement: 'bottom',
+      },
+    }),
     FileHandler.configure({
       allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
       consumePasteEvent: true,
@@ -173,6 +185,13 @@ document.querySelector('#link-bubble-menu .edit').addEventListener('click', () =
 })
 document.querySelector('#link-bubble-menu .unlink').addEventListener('click', () => {
   editor.chain().focus().unsetLink().run()
+})
+
+document.querySelector('#list-bubble-menu .lift').addEventListener('click', () => {
+  editor.chain().focus().liftListItem('listItem').run()
+})
+document.querySelector('#list-bubble-menu .sink').addEventListener('click', () => {
+  editor.chain().focus().sinkListItem('listItem').run()
 })
 
 
