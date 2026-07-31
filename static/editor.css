@@ -1,14 +1,16 @@
 :root {
-  --bg: #fff;
-  --bggrey: #f9fafb;
-  --mggrey: #d1d5db;
-  --hggrey: #e5e7eb;
+  color-scheme: light dark;
 
-  --bggreen: #cdffd0;
-  --bgred: red;
+  --bg: light-dark(#fff, #000);
+  --bggrey: light-dark(#f9fafb, #111);
+  --mggrey: light-dark(#d1d5db, #333);
+  --hggrey: light-dark(#e5e7eb, #555);
 
-  --text: #000;
-  --fgblue: #00e;
+  --bggreen: light-dark(#cdffd0, #031);
+  --bgred: light-dark(red, #ab0a0a);
+
+  --text: light-dark(#000, #fff);
+  --fgblue: light-dark(#00e, #80ffff);
 }
 
 body {
@@ -16,8 +18,10 @@ body {
   margin: 0;
 }
 
-body, button, input {
+body, input {
   background-color: var(--bg);
+}
+body, button, input {
   font-family: monospace;
   color: var(--text);
 }
@@ -112,7 +116,9 @@ input:invalid {
   background: var(--mggrey);
 }
 .toolbox.published .toolbar.secondary {
-  background-color: color-mix(in oklab, var(--bggreen) 100%, #000 15%);
+  background-color: light-dark(
+    color-mix(in oklab, var(--bggreen) 100%, #000 15%),
+    color-mix(in oklab, var(--bggreen) 100%, #fff 15%));
 }
 
 .toolbar.bar-hide {
@@ -124,12 +130,13 @@ input:invalid {
   font-size: 0.875rem;
   border: 1px solid transparent;
   border-radius: 0.25rem;
-  background: var(--bggrey);
+  background: transparent;
 }
 .toolbar button:hover, .toolbar a:hover {
   background: var(--hggrey);
 }
 .toolbar button.is-active {
+  background: var(--bggrey);
   filter: invert(1);
 }
 
@@ -172,14 +179,14 @@ input:invalid {
 .tiptap h1, .tiptap h2, .tiptap h3 { margin: 1rem 0 0.5rem; }
 .tiptap ul, .tiptap ol { padding-left: 1.5rem; }
 .tiptap pre {
-  background: #111827;
+  background: light-dark(#111827, #502d8b);
   color: #f3f4f6;
   padding: 0.75rem;
   border-radius: 0.25rem;
   font-size: 0.875rem;
 }
 .tiptap code {
-  background: #f3f4f6;
+  background: light-dark(#f3f4f6, #502d8b);
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875rem;
@@ -193,13 +200,13 @@ input:invalid {
   line-height: 0;
 }
 .tiptap .ProseMirror-selectednode [data-resize-wrapper] {
-  outline: 1px solid rgba(0, 0, 0, 0.5);
+  outline: 1px solid light-dark(#0008, #fff8);
 }
 .tiptap [data-resize-handle] {
   visibility: hidden;
   position: absolute;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: light-dark(#0008, #fff8);
+  border: 1px solid #fffc;
   border-radius: 5px;
   z-index: 10;
   width: 8px;
@@ -213,8 +220,8 @@ input:invalid {
   position: absolute;
   z-index: 30;
 
-  background-color: var(--bg);
-  border: 1px solid var(--mggrey);
+  background-color: light-dark(var(--bg), #772944);
+  border: 1px solid light-dark(var(--mggrey), #d84a7c);
 
   border-radius: 0.7rem;
   box-shadow: 0px 12px 33px 0px rgba(0, 0, 0, 0.06), 0px 3.618px 9.949px 0px rgba(0, 0, 0, 0.04);
