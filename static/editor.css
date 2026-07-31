@@ -42,7 +42,7 @@ input:invalid {
   border: 1px solid #d1d5db;
   border-radius: 0.375rem 0.375rem 0 0;
 }
-.toolbox.published {
+.published {
   background: #cdffd0;
 }
 
