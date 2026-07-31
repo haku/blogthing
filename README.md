@@ -41,3 +41,4 @@ bonus nice to have:
 * [ ] https://tiptap.dev/docs/editor/extensions/functionality/color ?
 * [ ] https://tiptap.dev/docs/editor/extensions/nodes/code-block-lowlight ?
 * [ ] https://tiptap.dev/docs/editor/extensions/nodes/task-list ?
+* [ ] favicon?
