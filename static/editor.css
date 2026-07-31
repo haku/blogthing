@@ -34,17 +34,20 @@ input:invalid {
 }
 
 #versions {
-  text-wrap: nowrap;
+  display: flex;
+  flex-flow: row;
+  gap: 0.5em;
 }
 #state {
-  display: inline-block;
+  display: block;
   text-align: center;
-  width: 1em;
+  width: 1.5em;
   line-height: 100%;
+  font-size: 120%;
 }
 #state.saved::before    { content: '✔'; }
-#state.unsaved::before  { content: '●'; color: #ff1717; }
-#state.saving::before   { content: '🗘'; color: #ff1717; }
+#state.unsaved::before  { content: '●'; color: light-dark(#ff1717, #ff5792); }
+#state.saving::before   { content: '🗘'; color: light-dark(#ff1717, #ff5792); }
 #state.historic::before { content: '🕰'; }
 
 .main-container {
