@@ -4,35 +4,65 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blogthing</title>
+    <link rel="stylesheet" href="/editor.css">
     <style>
+      #thinglist ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #thinglist .thing {
+        margin: 0.5em;
+        padding: 0.5em;
+        border-radius: 0.25rem;
+      }
       #thinglist .thing a {
         display: block;
+        text-decoration: none;
       }
       #thinglist .thing h3 {
         margin: 0.2em 0;
       }
       #thinglist .thing p {
         margin: 0.2em 0;
+        font-size: .8rem;
+      }
+      #thinglist .thing.published {
+        background: #cdffd0;
       }
     </style>
   </head>
   <body>
-    <div>
-      <button id="new_thing">New Thing</button>
-      <a href="/media.html">Media</a>
+    <div class="editor-container">
+      <div id="toolbox" class="toolbox">
+        <div class="toolbar">
+          <div class="bar left">
+          </div>
+          <div class="bar center">
+            <button id="new_thing">New Thing</button>
+            <a href="/media.html">Media</a>
+          </div>
+          <div class="bar right">
+          </div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div id="thinglist">
+          <ul>
+          </ul>
+        </div>
+        <template id="thingtemplate">
+          <li class="thing">
+            <a>
+              <h3></h3>
+              <p></p>
+            </a>
+          </li>
+        </template>
+      </div>
     </div>
-    <div id="thinglist">
-      <ul>
-      </ul>
-    </div>
-    <template id="thingtemplate">
-      <li class="thing">
-        <a>
-          <h3></h3>
-          <p></p>
-        </a>
-      </li>
-    </template>
+
 
     <script type="module">
       import * as Misc from './misc.mjs'
@@ -54,9 +84,8 @@
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${t.id}`)
             row.querySelector("h3").textContent = t.title || "Untitled"
             row.querySelector("p").textContent =
-                `${t.id}: v${t.version} ` +
-                `modified ${Misc.formatTimestamp(t.updated)} ` +
-                (t.published ? "Published" : "Unpublished")
+                `${Misc.formatTimestamp(t.updated)} • v${t.version}`
+            row.firstElementChild.classList.add(t.published ? "published" : "pnpublished")
             thingList.append(row)
           }
         })
