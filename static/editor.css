@@ -25,7 +25,7 @@ input:invalid {
 #state.saving::before   { content: '🗘'; color: #ff1717; }
 #state.historic::before { content: '🕰'; }
 
-.editor-container {
+.main-container {
   max-width: 48rem;
   margin: 0 auto;
 }
