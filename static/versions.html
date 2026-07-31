@@ -58,7 +58,7 @@
           for (const t of data) {
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${thing_id}&version=${t.version}`)
-            row.querySelector("p").textContent = `v${t.version} modified ${Misc.formatTimestamp(t.updated)} ${t.length} bytes`
+            row.querySelector("p").textContent = `v${t.version} • ${Misc.formatTimestamp(t.updated)} • ${t.length}b`
             versionList.append(row)
           }
         })
