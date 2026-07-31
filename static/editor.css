@@ -199,6 +199,11 @@ input:invalid {
   padding: 0;
 }
 
+/* default selection colour is likely fine in light mode. */
+@media (prefers-color-scheme: dark) {
+  .tiptap ::selection { background-color: #d84a7c; }
+}
+
 .tiptap [data-resize-container] {
   line-height: 0;
 }
