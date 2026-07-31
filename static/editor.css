@@ -189,7 +189,7 @@ input:invalid {
   font-size: 0.875rem;
 }
 .tiptap code {
-  background: light-dark(#f3f4f6, #502d8b);
+  background: light-dark(var(--hggrey), #502d8b);
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
   font-size: 0.875rem;
