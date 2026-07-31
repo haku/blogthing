@@ -46,7 +46,7 @@ input:invalid {
   font-size: 120%;
 }
 #state.saved::before    { content: '✔'; }
-#state.unsaved::before  { content: '●'; color: light-dark(#ff1717, #ff5792); }
+#state.unsaved::before  { content: '⬤'; color: light-dark(#ff1717, #ff5792); }
 #state.saving::before   { content: '🗘'; color: light-dark(#ff1717, #ff5792); }
 #state.historic::before { content: '🕰'; }
 
