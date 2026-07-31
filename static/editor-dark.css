@@ -1,9 +1,11 @@
 @media (prefers-color-scheme: dark) {
 
 :root {
+  --bg: #000;
   --bggrey: #111;
   --mggrey: #333;
   --hggrey: #555;
+
   --bggreen: #031;
   --bgred: #ab0a0a;
 
@@ -11,49 +13,8 @@
   --fgblue: #80ffff;
 }
 
-body, button, input {
-  background-color: #000;
-  color: var(--text);
-}
-a {
-  color: var(--fgblue);
-}
-
-input:invalid {
-  background-color: var(--bgred);
-}
-
-#state.unsaved::before  { color: #ff1717; }
-#state.saving::before   { color: #ff1717; }
-
-.toolbox {
-  background-color: var(--bggrey);
-  border-color: var(--mggrey);
-}
-.published {
-  background-color: var(--bggreen);
-}
-
-.toolbar.secondary {
-  background-color: var(--mggrey);
-}
 .toolbox.published .toolbar.secondary {
-  background-color: color-mix(in oklab, var(--bggreen) 100%, #000000 20%);
-}
-
-.toolbar button:hover, .toolbar a:hover {
-  background-color: var(--hggrey);
-}
-.toolbar button.is-active {
-  filter: invert(1);
-}
-
-#pop-msg {
-  background-color: #f4f;
-}
-
-.tiptap, .main-content {
-  border-color: var(--mggrey);
+  background-color: color-mix(in oklab, var(--bggreen) 100%, #fff 15%);
 }
 
 .tiptap pre {
@@ -73,15 +34,6 @@ input:invalid {
 .bubble-menu {
   background-color: #772944;
   border-color: #d84a7c;
-}
-.bubble-menu button:hover {
-  background-color: var(--hggrey);
-}
-.bubble-menu button.is-active {
-  filter: invert(1);
-}
-.bubble-menu a:hover {
-  background-color: var(--hggrey);
 }
 
 }

@@ -1,14 +1,32 @@
+:root {
+  --bg: #fff;
+  --bggrey: #f9fafb;
+  --mggrey: #d1d5db;
+  --hggrey: #e5e7eb;
+
+  --bggreen: #cdffd0;
+  --bgred: red;
+
+  --text: #000;
+  --fgblue: #00e;
+}
+
 body {
   padding: 0;
   margin: 0;
 }
 
-body, input, button {
+body, button, input {
+  background-color: var(--bg);
   font-family: monospace;
+  color: var(--text);
+}
+a {
+  color: var(--fgblue);
 }
 
 input:invalid {
-  background-color: red;
+  background-color: var(--bgred);
 }
 
 #versions {
@@ -38,12 +56,12 @@ input:invalid {
   padding-top: env(safe-area-inset-top);
   overflow: auto;
 
-  background: #f9fafb;
-  border: 1px solid #d1d5db;
+  background: var(--bggrey);
+  border: 1px solid var(--mggrey);
   border-radius: 0.375rem 0.375rem 0 0;
 }
 .published {
-  background: #cdffd0;
+  background: var(--bggreen);
 }
 
 .toolbar {
@@ -91,10 +109,10 @@ input:invalid {
   display: flex;
   justify-content: center;
   padding: 0.3rem;
-  background: #d1d5db;
+  background: var(--mggrey);
 }
 .toolbox.published .toolbar.secondary {
-  background: #aed8b1;
+  background-color: color-mix(in oklab, var(--bggreen) 100%, #000 15%);
 }
 
 .toolbar.bar-hide {
@@ -106,15 +124,13 @@ input:invalid {
   font-size: 0.875rem;
   border: 1px solid transparent;
   border-radius: 0.25rem;
-  background: transparent;
-  cursor: pointer;
+  background: var(--bggrey);
 }
 .toolbar button:hover, .toolbar a:hover {
-  background: #e5e7eb;
+  background: var(--hggrey);
 }
 .toolbar button.is-active {
-  background: #111827;
-  color: #fff;
+  filter: invert(1);
 }
 
 .msgpop-wrapper {
@@ -145,7 +161,7 @@ input:invalid {
 
 .tiptap, .main-content {
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--mggrey);
   border-top: none;
   border-radius: 0 0 0.375rem 0.375rem;
   min-height: 10rem;
@@ -197,8 +213,8 @@ input:invalid {
   position: absolute;
   z-index: 30;
 
-  background-color: #fff;
-  border: 1px solid #d1d5db;
+  background-color: var(--bg);
+  border: 1px solid var(--mggrey);
 
   border-radius: 0.7rem;
   box-shadow: 0px 12px 33px 0px rgba(0, 0, 0, 0.06), 0px 3.618px 9.949px 0px rgba(0, 0, 0, 0.04);
@@ -217,10 +233,10 @@ input:invalid {
   font-size: .875rem;
 }
 .bubble-menu button:hover {
-  background-color: rgba(61, 37, 20, 0.12);
+  background-color: var(--hggrey);
 }
 .bubble-menu button.is-active {
-  background-color: #6a00f5;
+  filter: invert(1);
 }
 .bubble-menu button.is-active:hover {
   background-color: #5800cc;
@@ -232,7 +248,7 @@ input:invalid {
   font-size: .875rem;
 }
 .bubble-menu a:hover {
-  background-color: rgba(61, 37, 20, 0.12);
+  background-color: var(--hggrey);
 }
 
 #link-bubble-menu {
