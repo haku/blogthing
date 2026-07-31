@@ -1,7 +1,8 @@
-import { Editor } from 'https://esm.sh/@tiptap/core'
-import StarterKit from 'https://esm.sh/@tiptap/starter-kit'
+import BubbleMenu from 'https://esm.sh/@tiptap/extension-bubble-menu'
 import FileHandler from 'https://esm.sh/@tiptap/extension-file-handler'
 import Image from 'https://esm.sh/@tiptap/extension-image'
+import StarterKit from 'https://esm.sh/@tiptap/starter-kit'
+import { Editor } from 'https://esm.sh/@tiptap/core'
 
 import * as Stts from './editor-status.mjs'
 
@@ -17,6 +18,17 @@ const editor = new Editor({
       link: {
         openOnClick: false,
         defaultProtocol: 'https',
+      },
+    }),
+    BubbleMenu.configure({
+      pluginKey: 'link-bubble-menu',
+      element: document.querySelector('#link-bubble-menu'),
+      shouldShow: ({editor, view, state, oldState, from, to}) => {
+        return editor.isActive('link');
+      },
+      options: {
+        onShow: updateLinkBubbleMenu,
+        onUpdate: updateLinkBubbleMenu,
       },
     }),
     FileHandler.configure({
@@ -102,19 +114,7 @@ buttons.forEach((button) => {
         editor.chain().focus().toggleCodeBlock().run()
         break
       case 'link':
-        const prev = editor.getAttributes('link').href
-        const url = prompt("URL:", prev)
-        if (url) {
-          if (prev) {
-            editor.chain().focus().extendMarkRange('link').setLink({href: url}).run()
-          }
-          else {
-            editor.chain().focus().setLink({href: url}).run()
-          }
-        }
-        break
-      case 'unlink':
-        editor.chain().focus().unsetLink().run()
+        addOrEditLink()
         break
     }
 
@@ -135,7 +135,6 @@ function updateActiveButtons() {
     blockquote: () => editor.isActive('blockquote'),
     codeBlock: () => editor.isActive('codeBlock'),
     link: () => editor.isActive('link'),
-    unlink: () => editor.isActive('link'),
   }
 
   buttons.forEach((button) => {
@@ -147,13 +146,35 @@ function updateActiveButtons() {
       button.classList.remove('is-active')
     }
   })
-
-  let info = null
-  if (map.link()) {
-    info = editor.getAttributes('link').href;
-  }
-  Stts.setInfo(info, true);
 }
+
+function addOrEditLink() {
+  const prev = editor.getAttributes('link').href
+  const url = prompt("URL:", prev)
+  if (url) {
+    if (prev) {
+      editor.chain().focus().extendMarkRange('link').setLink({href: url}).run()
+    }
+    else {
+      editor.chain().focus().setLink({href: url}).run()
+    }
+    updateLinkBubbleMenu()
+  }
+}
+
+// Wire up bubble menus
+function updateLinkBubbleMenu() {
+  const url = editor.getAttributes('link').href
+  document.querySelector('#link-bubble-menu a').setAttribute("href", url)
+  document.querySelector('#link-bubble-menu .preview').textContent = url
+}
+document.querySelector('#link-bubble-menu .edit').addEventListener('click', () => {
+  addOrEditLink()
+})
+document.querySelector('#link-bubble-menu .unlink').addEventListener('click', () => {
+  editor.chain().focus().unsetLink().run()
+})
+
 
 function extractTitle() {
   let title = null;

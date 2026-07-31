@@ -29,7 +29,7 @@ bonus nice to have:
 
 * [x] move duplicated code to modules, bit of a tidy up
 * [ ] dark theme
-* [ ] fix my weird link popup with this? https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
+* [x] fix my weird link popup with this? https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
 * [ ] how to clean up unused images?  how even to tell they are unused?  track when last fetched or something?
 * [ ] once enough data, some DB indexes
 * [ ] actual auth (SSO) ooh so fancy

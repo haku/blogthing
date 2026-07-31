@@ -33,20 +33,4 @@ function setErr(msg) {
   setMsg(msg, false)
 }
 
-const infoBox = document.getElementById('pop-info');
-function setInfo(msg, link=false) {
-  if (msg) {
-    if (link) {
-      infoBox.innerHTML = `<a href=${msg}>${msg}</a>`
-    }
-    else {
-      infoBox.textContent = msg
-    }
-    infoBox.style.visibility = 'visible'
-  }
-  else {
-    infoBox.style.visibility = 'hidden'
-  }
-}
-
-export { setMsg, setErr, setState, States, setInfo }
+export { setMsg, setErr, setState, States }

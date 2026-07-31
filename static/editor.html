@@ -26,7 +26,6 @@
             <button data-tiptap-button="blockquote">&gt;"</button>
             <button data-tiptap-button="codeBlock">&gt;C</button>
             <button data-tiptap-button="link">🔗</button>
-            <button data-tiptap-button="unlink">⛓️‍💥</button>
           </div>
 
           <div class="bar right">
@@ -51,8 +50,17 @@
       </div>
       <div class="msgpop-wrapper">
         <div id="pop-msg"  class="msgpop"></div>
-        <div id="pop-info" class="msgpop"></div>
       </div>
+
+      <div id="link-bubble-menu" class="bubble-menu" style="visibility: hidden;">
+        <div class="preview"></div>
+        <div class="buttons">
+          <button class="edit">edit</button>
+          <button class="unlink">unlink</button>
+          <a target="_blank">visit</a>
+        </div>
+      </div>
+
       <div id="editor"></div>
     </div>
 
