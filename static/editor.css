@@ -178,7 +178,21 @@ input:invalid {
   outline: none;
 }
 
+.tiptap h1 {
+  font-size: 170%;
+  border-left: 5px solid;
+  padding-left: 0.5em;
+}
+.tiptap h2 { font-size: 150%; }
 .tiptap p { margin: 0.5rem 0; }
+@media (min-width: 600px) {
+  /* some? browsers have this weird thing where monospace fonts default to smaller than standard text. */
+  .tiptap p { font-size: 1rem; }
+}
+@media (max-width: 600px) {
+  /* actually want a smaller font on phone though, so make that (unexpected) behaviour default */
+  .tiptap p { font-size: 0.8rem; }
+}
 .tiptap h1, .tiptap h2, .tiptap h3 { margin: 1rem 0 0.5rem; }
 .tiptap ul, .tiptap ol { padding-left: 1.5rem; }
 .tiptap pre {
