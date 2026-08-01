@@ -184,7 +184,10 @@ input:invalid {
   padding-left: 0.5em;
 }
 .tiptap h2 { font-size: 150%; }
-.tiptap p { margin: 0.5rem 0; }
+.tiptap p {
+  margin: 0.5rem 0;
+  line-height: 1.25;
+}
 @media (min-width: 600px) {
   /* some? browsers have this weird thing where monospace fonts default to smaller than standard text. */
   .tiptap p { font-size: 1rem; }
