@@ -169,7 +169,7 @@ input:invalid {
   background: #f4f;
 }
 
-.tiptap, .main-content {
+.main-content {
   padding: 0.75rem 1rem;
   border: 1px solid var(--mggrey);
   border-top: none;

@@ -8,6 +8,11 @@ import * as Stts from './editor-status.mjs'
 
 const editor = new Editor({
   element: document.querySelector('#editor'),
+  editorProps: {
+    attributes: {
+      class: 'main-content',
+    },
+  },
   extensions: [
     // https://tiptap.dev/docs/editor/extensions/functionality/starterkit
     StarterKit.configure({
