@@ -16,10 +16,13 @@ const LOAD_VERSION = getParam("version", /^[0-9]{1,10}$/)
 const THING_ID     = getParam('thing_id', /^[0-9a-f]{1,10}$/)
 
 const toolBox = document.getElementById('toolbox');
-const publishedBtn = document.getElementById('thing_published');
+const tagsBox = document.getElementById('thing_tags');
+const addTagBtn = document.getElementById('addtag');
 const dateBox = document.getElementById('thing_date');
+const publishedBtn = document.getElementById('thing_published');
 
 let thing_version = 0
+let thing_tags = []
 let thing_published = false
 
 function loadContent() {
@@ -34,6 +37,7 @@ function loadContent() {
 
   if (LOAD_VERSION != null) {
     editor.setEditable(false, false)
+    addTagBtn.disabled = true
     dateBox.disabled = true
     publishedBtn.disabled = true
   }
@@ -45,6 +49,9 @@ function loadContent() {
     })
     .then(data => {
       thing_version = data['thing_version']
+
+      if (data['thing_tags']) thing_tags = data['thing_tags']
+      updateTags()
 
       if (data['thing_published']) thing_published = data['thing_published']
       updatePublishedState()
@@ -79,6 +86,7 @@ function saveContent() {
 
   const json = editor.getJSON();
   json['thing_version'] = thing_version + 1;
+  json['thing_tags'] = thing_tags
   json['thing_published'] = thing_published
   json['thing_date'] = dateBox.value;
   json['thing_title'] = updatePageTitle()
@@ -105,6 +113,51 @@ function updatePageTitle() {
   document.title = title != null ? `${title} - Blogthing` : "Blogthing"
   return title
 }
+
+function updateTags() {
+  if (thing_tags.length > 0) {
+    tagsBox.innerHTML = ""
+    const tmpl = document.getElementById('tagtemplate');
+    for (let tag of thing_tags) {
+      const e = tmpl.content.cloneNode(true)
+      const btn = e.querySelector("button")
+      btn.textContent = tag
+      if (LOAD_VERSION == null) {
+        btn.addEventListener('click', () => promptRemoveTag(tag))
+      }
+      else {
+        btn.disabled = true
+      }
+      tagsBox.append(e)
+    }
+  }
+  else {
+    tagsBox.textContent = "(none)"
+  }
+}
+
+function promptRemoveTag(tag) {
+  if (confirm(`Remove tag?: ${tag}`)) {
+    const len = thing_tags.length
+    thing_tags = thing_tags.filter(t => t !== tag)
+    if (thing_tags.length != len) {
+      updateTags()
+      markDirty()
+    }
+  }
+}
+
+addTagBtn.addEventListener('click', () => {
+  let tag
+  while(tag = prompt("Tag: (max 50 characters)", tag)) {
+    if (tag.length < 50) {
+      thing_tags.push(tag)
+      updateTags()
+      markDirty()
+      break
+    }
+  }
+})
 
 function updatePublishedState() {
   publishedBtn.textContent = thing_published ? "Published" : "Unpublished"

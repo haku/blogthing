@@ -44,6 +44,11 @@
 
       <div id="settingsbox" class="tool-style hidden">
         <div class="group">
+          <span>Tags:</span> <span id="thing_tags"></span>
+          <template id="tagtemplate"><button></button></template>
+          <button id="addtag">Add Tag</button>
+        </div>
+        <div class="group">
           <label for="thing_date">Date:</label>
           <input type="text" id="thing_date" name="thing_date"
             pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
