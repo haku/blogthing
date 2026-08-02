@@ -151,9 +151,11 @@ addTagBtn.addEventListener('click', () => {
   let tag
   while(tag = prompt("Tag: (max 50 characters)", tag)) {
     if (tag.length < 50) {
-      thing_tags.push(tag)
-      updateTags()
-      markDirty()
+      if (!thing_tags.includes(tag)) {
+        thing_tags.push(tag)
+        updateTags()
+        markDirty()
+      }
       break
     }
   }
