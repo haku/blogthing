@@ -32,15 +32,23 @@ class DbStorage:
 
 
   def thing_list(self, tags):
-    query = "SELECT id, version, updated, title, published FROM things ORDER BY updated DESC"
+    subq = ""
     args = ()
     if tags:
-      query = ("SELECT DISTINCT id, version, updated, things.title, published "
-               "FROM things "
-               "LEFT JOIN tags ON tags.thing_id = things.id "
-               "WHERE tags.title=ANY(%s) "
-               "ORDER BY updated DESC")
+      subq = ("WHERE id IN ("
+              "  SELECT DISTINCT thing_id"
+              "  FROM tags"
+              "  WHERE title = ANY(%s)"
+              ") ")
       args = (tags,)
+
+    query = ("SELECT id, version, updated, things.title, published,"
+             "  array_agg(DISTINCT tags.title ORDER BY tags.title) AS tags "
+             "FROM things "
+             "LEFT JOIN tags ON tags.thing_id = things.id "
+             f"{subq}"
+             "GROUP BY id, version, updated, things.title, published "
+             "ORDER BY updated DESC")
 
     with self.cursor() as cur:
       cur.execute(query, args)
@@ -51,6 +59,7 @@ class DbStorage:
             "updated": int(r[2].timestamp()) if r[2] else None,
             "title": r[3],
             "published": r[4],
+            "tags": r[5],
           }
           for r in cur
       ]

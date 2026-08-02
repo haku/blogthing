@@ -56,7 +56,8 @@
           <li class="thing">
             <a>
               <h3></h3>
-              <p></p>
+              <p class="tags"></p>
+              <p class="date"></p>
             </a>
           </li>
         </template>
@@ -122,7 +123,8 @@
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${t.id}`)
             row.querySelector("h3").textContent = t.title || "Untitled"
-            row.querySelector("p").textContent =
+            row.querySelector(".tags").textContent = t.tags.join(", ")
+            row.querySelector(".date").textContent =
                 `${Misc.formatTimestamp(t.updated)} • v${t.version}`
             row.firstElementChild.classList.add(t.published ? "published" : "pnpublished")
             thingList.append(row)
