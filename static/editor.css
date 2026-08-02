@@ -67,7 +67,7 @@ input:invalid {
   border: 1px solid var(--mggrey);
   border-radius: 0.375rem 0.375rem 0 0;
 }
-.published {
+.toolbox.published {
   background: var(--bggreen);
 }
 
