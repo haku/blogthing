@@ -29,7 +29,7 @@
           </div>
 
           <div class="bar right">
-            <button id="metadata">📤</button>
+            <button id="settings">⚙️</button>
             <button id="versions">
               <span id="version"></span>
               <span id="state"></span>
@@ -37,7 +37,10 @@
           </div>
         </div>
 
-        <div id="metabox" class="toolbar secondary bar-hide">
+        <div id="settingsbox" class="toolbar secondary bar-hide">
+          <div class="bar left">
+            <button id="delete">🗑️</button>
+          </div>
           <div class="bar center">
             <div>
               <label for="thing_date">Date:</label>
@@ -79,16 +82,16 @@
         location.assign("/")
       })
 
-      const mdBox = document.getElementById('metabox');
-      const mdBtn = document.getElementById('metadata');
-      mdBtn.addEventListener('click', () => {
-        if (mdBox.classList.contains('bar-hide')) {
-          mdBox.classList.remove('bar-hide')
-          mdBtn.classList.add('is-active')
+      const setsBox = document.getElementById('settingsbox');
+      const setsBtn = document.getElementById('settings');
+      setsBtn.addEventListener('click', () => {
+        if (setsBox.classList.contains('bar-hide')) {
+          setsBox.classList.remove('bar-hide')
+          setsBtn.classList.add('is-active')
         }
         else {
-          mdBox.classList.add('bar-hide')
-          mdBtn.classList.remove('is-active')
+          setsBox.classList.add('bar-hide')
+          setsBtn.classList.remove('is-active')
         }
       })
 
