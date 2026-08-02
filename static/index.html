@@ -36,12 +36,13 @@
       <div id="toolbox" class="toolbox tool-style">
         <div class="toolbar">
           <div class="bar left">
-          </div>
-          <div class="bar center">
             <button id="new_thing">New Thing</button>
-            <a href="/media.html">Media</a>
+          </div>
+          <div id="taglist" class="bar center">
+            <template id="tagtemplate"><button></button></template>
           </div>
           <div class="bar right">
+            <a href="/media.html">Media</a>
           </div>
         </div>
       </div>
@@ -67,7 +68,25 @@
       import * as Misc from './misc.mjs'
 
       const newBtn = document.getElementById('new_thing')
+      const tagList = document.getElementById('taglist')
       const thingList = document.querySelector('#thinglist ul')
+
+      function loadTags() {
+        fetch('/tags/top')
+        .then(async response => {
+          await Misc.checkFetchResp(response)
+          return response.json();
+        })
+        .then(data => {
+          const tmpl = document.getElementById('tagtemplate')
+          for (const t of data) {
+            const row = tmpl.content.cloneNode(true)
+            const btn = row.querySelector("button")
+            btn.textContent = `${t.title}(${t.count})`
+            tagList.append(row)
+          }
+        })
+      }
 
       function loadThings() {
         const row_template = document.querySelector('#thingtemplate')
@@ -113,6 +132,7 @@
 
       newBtn.addEventListener('click', newThing)
       loadThings()
+      loadTags()
     </script>
   </body>
 </html>

@@ -191,6 +191,31 @@ class DbStorage:
       flask.abort(400, "invalid version.")
 
 
+  def tags_replace(self, thing_id, new_tags):
+    new_tags = set(new_tags)
+    with self.cursor() as cur:
+      cur.execute("SELECT title FROM tags WHERE thing_id=%s", (thing_id,))
+      existing = set([r[0] for r in cur])
+      to_add = new_tags - existing
+      to_rm = existing - new_tags
+      print(f"to_add={to_add} to_rm={to_rm}")
+      cur.executemany("INSERT INTO tags (thing_id, title) VALUES (%s, %s)",
+                      [(thing_id, t) for t in to_add])
+      cur.executemany("DELETE FROM tags WHERE thing_id=%s AND title=%s",
+                      [(thing_id, t) for t in to_rm])
+
+  def tags_top(self):
+    with self.cursor() as cur:
+      cur.execute("SELECT title, count(1) AS n FROM tags GROUP BY title ORDER BY n, title")
+      return [
+          {
+            "title": r[0],
+            "count": r[1],
+          }
+          for r in cur
+      ]
+
+
   def img_list(self):
     with self.cursor() as cur:
       cur.execute("SELECT id, created, type, length(data) FROM imgs ORDER BY created DESC")
@@ -262,6 +287,12 @@ class DbStorage:
           "content TEXT"
           ")")
       # ALTER TABLE things ADD COLUMN published BOOLEAN NOT NULL DEFAULT false;
+      cur.execute(
+          "CREATE TABLE IF NOT EXISTS tags ("
+          "thing_id INTEGER NOT NULL REFERENCES things(id),"
+          "title CHARACTER VARYING(50),"
+          "UNIQUE (thing_id, title)"
+          ")")
       cur.execute(
           "CREATE TABLE IF NOT EXISTS versions ("
           "thing_id INTEGER NOT NULL,"

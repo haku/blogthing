@@ -67,7 +67,13 @@ def serve_things_post(thing_id):
 
   title = body.get('thing_title')
 
+  tags = body.get('thing_tags')
+  if not isinstance(published, bool):
+    flask.abort(400, "missing or invalid thing_tags.")
+
   store.thing_write_update(thing_id, new_version, published, title, raw_body)
+  store.tags_replace(thing_id, tags)
+
   return {'thing_version': new_vesion}
 
 @app.get("/versions/<thing_id>")
@@ -77,6 +83,10 @@ def serve_versions_list(thing_id):
 @app.get("/versions/<thing_id>/<version>")
 def serve_versions_get(thing_id, version):
   return store.version_get(thing_id, version)
+
+@app.get("/tags/top")
+def serve_tags_top():
+  return store.tags_top()
 
 @app.get("/imgs")
 def serve_imgs_root_get():
