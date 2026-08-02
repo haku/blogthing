@@ -69,7 +69,7 @@ input:invalid {
   background: var(--bggrey);
   filter: invert(1);
 }
-.tool-style button:hover, .tool-style a:hover {
+.tool-style button:hover:enabled, .tool-style a:hover:enabled {
   background: var(--hggrey);
 }
 
@@ -269,13 +269,13 @@ input:invalid {
   line-height: 1.15;
   font-size: .875rem;
 }
-.bubble-menu button:hover {
+.bubble-menu button:hover:enabled {
   background-color: var(--hggrey);
 }
 .bubble-menu button.is-active {
   filter: invert(1);
 }
-.bubble-menu button.is-active:hover {
+.bubble-menu button.is-active:hover:enabled {
   background-color: #5800cc;
 }
 .bubble-menu a {
@@ -284,7 +284,7 @@ input:invalid {
   line-height: 1.15;
   font-size: .875rem;
 }
-.bubble-menu a:hover {
+.bubble-menu a:hover:enabled {
   background-color: var(--hggrey);
 }
 
