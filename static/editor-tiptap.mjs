@@ -6,6 +6,10 @@ import { Editor } from 'https://esm.sh/@tiptap/core'
 
 import * as Stts from './editor-status.mjs'
 
+function isMobile() {
+  return window.matchMedia("(max-width: 600px)").matches  // same as in css
+}
+
 const editor = new Editor({
   element: document.querySelector('#editor'),
   editorProps: {
@@ -42,7 +46,7 @@ const editor = new Editor({
       shouldShow: ({editor, view, state, oldState, from, to}) => {
         const { $from } = editor.state.selection
         return (editor.isActive('bulletList') || editor.isActive('orderedList')) &&
-          state.selection.empty && $from.parentOffset === 0
+          state.selection.empty && $from.parentOffset === 0 && isMobile()
       },
       options: {
         placement: 'bottom',
