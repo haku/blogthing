@@ -16,14 +16,14 @@ bare minimum bits needed to test if this is even possible and maybe worth the ef
 * [x] editor view fits on screen nicely including mobile
 * [x] some basic nav, like back to home from editor
 * [x] way to mark ready to publish etc
-* [ ] way to convert posts to serveable the result
+* [ ] way to convert posts to serveable html
   * maybe ./blogthing-generate --tags "foo,bar" --output some/path/for/output/html
 * [ ] figure out what is going on with thing_date / sort-key / whatever
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
 * [ ] keyboard shortcuts
 * [ ] image alt text
 * [ ] way to delete posts
-* [ ] way to organising things, maybe tags?
+* [x] way to organising things, maybe tags?
 
 bonus nice to have:
 
