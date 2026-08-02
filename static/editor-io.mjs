@@ -214,10 +214,11 @@ async function autosaveLoop() {
   }
 }
 
-// returns true if it did something successfully
+// returns true if it tried to do something
 async function saveIfNeeded() {
   if (!dirty) return false
-  return await saveNow()
+  await saveNow()
+  return true
 }
 
 // returns true if successful
