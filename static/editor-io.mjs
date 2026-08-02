@@ -56,8 +56,6 @@ function loadContent() {
         editor.chain().setContent(data).setTextSelection(0).focus().run()
 
       updatePageTitle()
-
-      //Stts.setMsg(`Loaded v${thing_version}${LOAD_VERSION != null ? " (read-only)" : ""}.`)
     })
     .catch(error => {
       console.error('Error fetching thing:', error)
@@ -98,7 +96,7 @@ function saveContent() {
   })
   .then(data => {
     thing_version = data['thing_version'];
-    //Stts.setMsg(`Saved v${thing_version}.`)
+    Stts.setErr(null)
   })
 }
 
@@ -163,13 +161,13 @@ async function autosaveLoop() {
   }
 }
 
-// returns true if it did something
+// returns true if it did something successfully
 async function saveIfNeeded() {
   if (!dirty) return false
-  await saveNow()
-  return true
+  return await saveNow()
 }
 
+// returns true if successful
 async function saveNow() {
   if (saving) {
     console.log("Skipping save as save already in progress.")
@@ -182,11 +180,13 @@ async function saveNow() {
   try {
     await saveContent();
     lastSave = Date.now();
+    return true
   }
   catch (error) {
     console.error('Error saving thing:', error)
     markDirty();
     Stts.setErr(`Error saving thing: ${error}`)
+    return false
   }
   finally {
     saving = false;

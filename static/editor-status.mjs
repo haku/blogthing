@@ -22,11 +22,16 @@ function setMsg(msg, fade=true) {
   if (timerId) clearTimeout(timerId)
   timerId = null
 
-  msgBox.textContent = msg
-  msgBox.classList.remove('fadeout')
-  msgBox.style.visibility = 'visible'
+  if (msg) {
+    msgBox.textContent = msg
+    msgBox.classList.remove('fadeout')
+    msgBox.style.visibility = 'visible'
 
-  if (fade) timerId = setTimeout(() => msgBox.classList.add('fadeout'), 2000)
+    if (fade) timerId = setTimeout(() => msgBox.classList.add('fadeout'), 2000)
+  }
+  else {
+    msgBox.style.visibility = 'hidden'
+  }
 }
 
 function setErr(msg) {
