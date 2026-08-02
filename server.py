@@ -24,7 +24,8 @@ def serve_root():
 
 @app.get("/things")
 def serve_things_root_get():
-  return store.thing_list()
+  tags = flask.request.args.getlist("t")
+  return store.thing_list(tags)
 
 @app.post("/things")
 def serve_things_root_post():

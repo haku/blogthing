@@ -31,9 +31,19 @@ class DbStorage:
     self.db_pool.close()
 
 
-  def thing_list(self):
+  def thing_list(self, tags):
+    query = "SELECT id, version, updated, title, published FROM things ORDER BY updated DESC"
+    args = ()
+    if tags:
+      query = ("SELECT DISTINCT id, version, updated, things.title, published "
+               "FROM things "
+               "LEFT JOIN tags ON tags.thing_id = things.id "
+               "WHERE tags.title=ANY(%s) "
+               "ORDER BY updated DESC")
+      args = (tags,)
+
     with self.cursor() as cur:
-      cur.execute("SELECT id, version, updated, title, published FROM things ORDER BY updated DESC")
+      cur.execute(query, args)
       return [
           {
             "id": r[0],

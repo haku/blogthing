@@ -70,6 +70,7 @@
       const newBtn = document.getElementById('new_thing')
       const tagList = document.getElementById('taglist')
       const thingList = document.querySelector('#thinglist ul')
+      let filter_tags = []  // TODO store this in the page url
 
       function loadTags() {
         fetch('/tags/top')
@@ -79,24 +80,44 @@
         })
         .then(data => {
           const tmpl = document.getElementById('tagtemplate')
-          for (const t of data) {
+          for (const tag of data) {
             const row = tmpl.content.cloneNode(true)
             const btn = row.querySelector("button")
-            btn.textContent = `${t.title}(${t.count})`
+            btn.textContent = `${tag.title}(${tag.count})`
+            btn.addEventListener('click', () => {
+              if (filter_tags.includes(tag.title)) {
+                filter_tags = filter_tags.filter(t => t !== tag.title)
+                btn.classList.remove('is-active')
+              }
+              else {
+                filter_tags.push(tag.title)
+                btn.classList.add('is-active')
+              }
+              loadThings()
+            })
             tagList.append(row)
           }
         })
       }
 
       function loadThings() {
-        const row_template = document.querySelector('#thingtemplate')
+        let url = "/things"
+        if (filter_tags.length > 0) {
+          const params = new URLSearchParams();
+          for (const tag of filter_tags) {
+            params.append("t", tag);
+          }
+          url += `?${params}`
+        }
 
-        fetch('/things')
+        fetch(url)
         .then(async response => {
           await Misc.checkFetchResp(response)
           return response.json();
         })
         .then(data => {
+          thingList.innerHTML = ""
+          const row_template = document.querySelector('#thingtemplate')
           for (const t of data) {
             const row = row_template.content.cloneNode(true)
             row.querySelector("a").setAttribute("href", `/editor.html?thing_id=${t.id}`)
