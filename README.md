@@ -17,6 +17,7 @@ bare minimum bits needed to test if this is even possible and maybe worth the ef
 * [x] some basic nav, like back to home from editor
 * [x] way to mark ready to publish etc
 * [ ] way to convert posts to serveable html
+  * also see https://github.com/tugkanpilka/tiptap-python-utils
   * maybe ./blogthing-generate --tags "foo,bar" --output some/path/for/output/html
 * [ ] figure out what is going on with thing_date / sort-key / whatever
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
