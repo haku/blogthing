@@ -8,7 +8,7 @@
   </head>
   <body>
     <div class="main-container">
-      <div id="toolbox" class="toolbox">
+      <div id="toolbox" class="toolbox tool-style">
         <div class="toolbar">
           <div class="bar left">
             <button id="home" style="font-weight: bold; width: 3em;">⌂</button>
@@ -36,24 +36,22 @@
             </button>
           </div>
         </div>
-
-        <div id="settingsbox" class="toolbar secondary bar-hide">
-          <div class="bar left">
-            <button id="delete">🗑️</button>
-          </div>
-          <div class="bar center">
-            <div>
-              <label for="thing_date">Date:</label>
-              <input type="text" id="thing_date" name="thing_date"
-                pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
-            </div>
-            <button id="thing_published">Unpublished</button>
-          </div>
-        </div>
       </div>
 
       <div class="msgpop-wrapper">
         <div id="pop-msg"  class="msgpop"></div>
+      </div>
+
+      <div id="settingsbox" class="tool-style hidden">
+        <div class="group">
+          <label for="thing_date">Date:</label>
+          <input type="text" id="thing_date" name="thing_date"
+            pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" />
+        </div>
+        <div class="group">
+          <button id="delete">🗑️ Delete</button>
+          <button id="thing_published">Unpublished</button>
+        </div>
       </div>
 
       <div id="link-bubble-menu" class="bubble-menu" style="visibility: hidden;">
@@ -85,12 +83,13 @@
       const setsBox = document.getElementById('settingsbox');
       const setsBtn = document.getElementById('settings');
       setsBtn.addEventListener('click', () => {
-        if (setsBox.classList.contains('bar-hide')) {
-          setsBox.classList.remove('bar-hide')
+        if (setsBox.classList.contains('hidden')) {
+          setsBox.classList.remove('hidden')
           setsBtn.classList.add('is-active')
+          window.scrollTo(0, 0)
         }
         else {
-          setsBox.classList.add('bar-hide')
+          setsBox.classList.add('hidden')
           setsBtn.classList.remove('is-active')
         }
       })
