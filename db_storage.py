@@ -225,7 +225,7 @@ class DbStorage:
 
   def tags_top(self):
     with self.cursor() as cur:
-      cur.execute("SELECT title, count(1) AS n FROM tags GROUP BY title ORDER BY n, title")
+      cur.execute("SELECT title, count(1) AS n FROM tags GROUP BY title ORDER BY n DESC, title")
       return [
           {
             "title": r[0],
