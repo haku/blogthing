@@ -129,6 +129,34 @@ input:invalid {
   }
 }
 
+.popover-menu {
+  position-area: bottom;
+  flex-flow: column;
+  gap: 0.2rem;
+  border: 1px solid var(--mggrey);
+  border-radius: 0 0 0.375rem 0.375rem;
+}
+.popover-menu:popover-open {
+  display: flex;
+}
+.popover-menu button {
+  padding: 0.5rem;
+}
+.popover-button.open {
+  outline: 2px solid var(--mggrey);
+}
+@media (min-width: 600px) {
+  .toolbox [data-tiptap-button="heading"] {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .toolbox [data-tiptap-button="h1"],
+  .toolbox [data-tiptap-button="h2"] {
+    display: none;
+  }
+}
+
 #settingsbox {
   padding: 0;
   overflow: auto;

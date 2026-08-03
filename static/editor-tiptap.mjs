@@ -149,6 +149,7 @@ function updateActiveButtons() {
     italic: () => editor.isActive('italic'),
     strike: () => editor.isActive('strike'),
     code: () => editor.isActive('code'),
+    heading: () => editor.isActive('heading'),
     h1: () => editor.isActive('heading', { level: 1 }),
     h2: () => editor.isActive('heading', { level: 2 }),
     bulletList: () => editor.isActive('bulletList'),
@@ -182,6 +183,13 @@ function addOrEditLink() {
     updateLinkBubbleMenu()
   }
 }
+
+// Wire up popover styling
+const headingMnu = document.querySelector("#heading-popover-menu")
+const headingBtn = document.querySelector('[data-tiptap-button="heading"]')
+headingMnu.addEventListener("toggle", () => {
+  headingBtn.classList.toggle("open", headingMnu.matches(":popover-open"));
+});
 
 // Wire up bubble menus
 function updateLinkBubbleMenu() {

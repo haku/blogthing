@@ -8,6 +8,11 @@
   </head>
   <body>
     <div class="main-container">
+      <div id="heading-popover-menu" class="popover-menu tool-style" popover="auto">
+        <button data-tiptap-button="h1">H1</button>
+        <button data-tiptap-button="h2">H2</button>
+      </div>
+
       <div id="toolbox" class="toolbox tool-style">
         <div class="toolbar">
           <div class="bar left">
@@ -19,6 +24,9 @@
             <button data-tiptap-button="italic">I</button>
             <button data-tiptap-button="strike">S</button>
             <button data-tiptap-button="code">C</button>
+            <button data-tiptap-button="heading"
+              class="popover-button"
+              popovertarget="heading-popover-menu">H</button>
             <button data-tiptap-button="h1">H1</button>
             <button data-tiptap-button="h2">H2</button>
             <button data-tiptap-button="bulletList">•</button>
