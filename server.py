@@ -22,12 +22,12 @@ app = flask.Flask(
 def serve_root():
   return flask.send_file("static/index.html")
 
-@app.get("/things")
+@app.get("/api/things")
 def serve_things_root_get():
   tags = flask.request.args.getlist("t")
   return store.thing_list(tags)
 
-@app.post("/things")
+@app.post("/api/things")
 def serve_things_root_post():
   if not flask.request.headers.get("Content-Type") == "application/json":
     flask.abort(400, "invalid content_type.")
@@ -43,11 +43,11 @@ def serve_things_root_post():
     case _:
       flask.abort(400, "unknown action.")
 
-@app.get("/things/<thing_id>")
+@app.get("/api/things/<thing_id>")
 def serve_things_get(thing_id):
   return store.thing_get(thing_id)
 
-@app.post("/things/<thing_id>")
+@app.post("/api/things/<thing_id>")
 def serve_things_post(thing_id):
   if not flask.request.headers.get("Content-Type") == "application/json":
     flask.abort(400, "invalid content_type.")
@@ -77,15 +77,15 @@ def serve_things_post(thing_id):
 
   return {'thing_version': new_vesion}
 
-@app.get("/versions/<thing_id>")
+@app.get("/api/versions/<thing_id>")
 def serve_versions_list(thing_id):
   return store.versions_list(thing_id)
 
-@app.get("/versions/<thing_id>/<version>")
+@app.get("/api/versions/<thing_id>/<version>")
 def serve_versions_get(thing_id, version):
   return store.version_get(thing_id, version)
 
-@app.get("/tags/top")
+@app.get("/api/tags/top")
 def serve_tags_top():
   return store.tags_top()
 

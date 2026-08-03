@@ -32,8 +32,8 @@ function loadContent() {
   }
 
   const path = LOAD_VERSION == null
-    ? `/things/${THING_ID}`
-    : `/versions/${THING_ID}/${LOAD_VERSION}`
+    ? `/api/things/${THING_ID}`
+    : `/api/versions/${THING_ID}/${LOAD_VERSION}`
 
   if (LOAD_VERSION != null) {
     editor.setEditable(false, false)
@@ -91,7 +91,7 @@ function saveContent() {
   json['thing_date'] = dateBox.value;
   json['thing_title'] = updatePageTitle()
 
-  return fetch(`/things/${THING_ID}`, {
+  return fetch(`/api/things/${THING_ID}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

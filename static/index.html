@@ -75,7 +75,7 @@
       let filter_tags = []  // TODO store this in the page url
 
       function loadTags() {
-        fetch('/tags/top')
+        fetch('/api/tags/top')
         .then(async response => {
           await Misc.checkFetchResp(response)
           return response.json();
@@ -103,7 +103,7 @@
       }
 
       function loadThings() {
-        let url = "/things"
+        let url = "/api/things"
         if (filter_tags.length > 0) {
           const params = new URLSearchParams();
           for (const tag of filter_tags) {
@@ -134,7 +134,7 @@
       }
 
       function newThing() {
-        return fetch('/things', {
+        return fetch('/api/things', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

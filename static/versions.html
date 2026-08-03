@@ -49,7 +49,7 @@
 
         const row_template = document.querySelector('#versiontemplate')
 
-        fetch(`/versions/${thing_id}`)
+        fetch(`/api/versions/${thing_id}`)
         .then(async response => {
           await Misc.checkFetchResp(response)
           return response.json();
