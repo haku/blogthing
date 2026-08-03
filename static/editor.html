@@ -12,6 +12,14 @@
         <button data-tiptap-button="h1">H1</button>
         <button data-tiptap-button="h2">H2</button>
       </div>
+      <div id="list-popover-menu" class="popover-menu tool-style" popover="auto">
+        <button data-tiptap-button="bulletList">•</button>
+        <button data-tiptap-button="orderedList">1</button>
+      </div>
+      <div id="block-popover-menu" class="popover-menu tool-style" popover="auto">
+        <button data-tiptap-button="blockquote">&gt;"</button>
+        <button data-tiptap-button="codeblock">&gt;C</button>
+      </div>
 
       <div id="toolbox" class="toolbox tool-style">
         <div class="toolbar">
@@ -24,15 +32,25 @@
             <button data-tiptap-button="italic">I</button>
             <button data-tiptap-button="strike">S</button>
             <button data-tiptap-button="code">C</button>
+
             <button data-tiptap-button="heading"
               class="popover-button"
               popovertarget="heading-popover-menu">H</button>
             <button data-tiptap-button="h1">H1</button>
             <button data-tiptap-button="h2">H2</button>
+
+            <button data-tiptap-button="list"
+              class="popover-button"
+              popovertarget="list-popover-menu">L</button>
             <button data-tiptap-button="bulletList">•</button>
             <button data-tiptap-button="orderedList">1</button>
+
+            <button data-tiptap-button="block"
+              class="popover-button"
+              popovertarget="block-popover-menu">&gt;</button>
             <button data-tiptap-button="blockquote">&gt;"</button>
-            <button data-tiptap-button="codeBlock">&gt;C</button>
+            <button data-tiptap-button="codeblock">&gt;C</button>
+
             <button data-tiptap-button="link">🔗</button>
           </div>
 

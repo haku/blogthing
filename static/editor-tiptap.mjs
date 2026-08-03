@@ -131,7 +131,7 @@ buttons.forEach((button) => {
       case 'blockquote':
         editor.chain().focus().toggleBlockquote().run()
         break
-      case 'codeBlock':
+      case 'codeblock':
         editor.chain().focus().toggleCodeBlock().run()
         break
       case 'link':
@@ -152,10 +152,12 @@ function updateActiveButtons() {
     heading: () => editor.isActive('heading'),
     h1: () => editor.isActive('heading', { level: 1 }),
     h2: () => editor.isActive('heading', { level: 2 }),
+    list: () => editor.isActive('bulletList') || editor.isActive('orderedList'),
     bulletList: () => editor.isActive('bulletList'),
     orderedList: () => editor.isActive('orderedList'),
+    block: () => editor.isActive('block'),
     blockquote: () => editor.isActive('blockquote'),
-    codeBlock: () => editor.isActive('codeBlock'),
+    codeblock: () => editor.isActive('codeBlock'),
     link: () => editor.isActive('link'),
   }
 
@@ -185,11 +187,13 @@ function addOrEditLink() {
 }
 
 // Wire up popover styling
-const headingMnu = document.querySelector("#heading-popover-menu")
-const headingBtn = document.querySelector('[data-tiptap-button="heading"]')
-headingMnu.addEventListener("toggle", () => {
-  headingBtn.classList.toggle("open", headingMnu.matches(":popover-open"));
-});
+for (const name of ["heading", "list", "block"]) {
+  const b = document.querySelector(`[data-tiptap-button="${name}"]`)
+  const m = document.querySelector(`#${name}-popover-menu`)
+  m.addEventListener("toggle", () => {
+    b.classList.toggle("open", m.matches(":popover-open"));
+  });
+}
 
 // Wire up bubble menus
 function updateLinkBubbleMenu() {

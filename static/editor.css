@@ -109,7 +109,7 @@ input:invalid {
 .toolbar .bar.right {
     justify-self: end;
 }
-@media (max-width: 32rem /*no idea best unit here*/) {
+@media (max-width: 22rem /*no idea best unit here*/) {
   .toolbar {
     grid-template-columns: auto;
     grid-template-areas:
@@ -146,13 +146,20 @@ input:invalid {
   outline: 2px solid var(--mggrey);
 }
 @media (min-width: 600px) {
-  .toolbox [data-tiptap-button="heading"] {
+  .toolbox [data-tiptap-button="heading"],
+  .toolbox [data-tiptap-button="list"],
+  .toolbox [data-tiptap-button="block"] {
     display: none;
   }
 }
 @media (max-width: 600px) {
   .toolbox [data-tiptap-button="h1"],
-  .toolbox [data-tiptap-button="h2"] {
+  .toolbox [data-tiptap-button="h2"],
+  .toolbox [data-tiptap-button="bulletList"],
+  .toolbox [data-tiptap-button="orderedList"],
+  .toolbox [data-tiptap-button="blockquote"],
+  .toolbox [data-tiptap-button="codeblock"],
+  #version {
     display: none;
   }
 }
