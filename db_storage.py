@@ -226,7 +226,6 @@ class DbStorage:
       existing = set([r[0] for r in cur])
       to_add = new_tags - existing
       to_rm = existing - new_tags
-      print(f"to_add={to_add} to_rm={to_rm}")
       cur.executemany("INSERT INTO tags (thing_id, title) VALUES (%s, %s)",
                       [(thing_id, t) for t in to_add])
       cur.executemany("DELETE FROM tags WHERE thing_id=%s AND title=%s",
