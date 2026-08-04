@@ -21,9 +21,28 @@ const addTagBtn = document.getElementById('addtag');
 const dateBox = document.getElementById('thing_date');
 const publishedBtn = document.getElementById('thing_published');
 
+let autosave_interval_id = null
 let thing_version = 0
 let thing_tags = []
 let thing_published = false
+
+function setReadOnly() {
+  editor.setEditable(false, false)
+  addTagBtn.disabled = true
+  dateBox.disabled = true
+  publishedBtn.disabled = true
+
+  if (autosave_interval_id != null) {
+    clearInterval(autosave_interval_id)
+    autosave_interval_id = null
+  }
+}
+
+function lockForVersionConflict() {
+  setReadOnly()
+  Stts.setErr("Changes can not be saved because they conflict with changes made in another session."
+    + "  Reload required, which will discard changes since last save.")
+}
 
 function loadContent() {
   if (!THING_ID) {
@@ -36,10 +55,7 @@ function loadContent() {
     : `/api/versions/${THING_ID}/${LOAD_VERSION}`
 
   if (LOAD_VERSION != null) {
-    editor.setEditable(false, false)
-    addTagBtn.disabled = true
-    dateBox.disabled = true
-    publishedBtn.disabled = true
+    setReadOnly()
   }
 
   return fetch(path)
@@ -48,6 +64,11 @@ function loadContent() {
       return response.json();
     })
     .then(data => {
+      if (!areChangesSaved()) {
+        lockForVersionConflict()
+        return
+      }
+
       thing_version = data['thing_version']
 
       if (data['thing_tags']) thing_tags = data['thing_tags']
@@ -62,6 +83,7 @@ function loadContent() {
       if (data.type)
         editor.chain().setContent(data).setTextSelection(0).focus().run()
 
+      markClean()
       updatePageTitle()
     })
     .catch(error => {
@@ -99,12 +121,17 @@ function saveContent() {
     body: JSON.stringify(json),
   })
   .then(async response => {
+    if (response.status == 409) {
+      lockForVersionConflict()
+      return false
+    }
     await Misc.checkFetchResp(response)
-    return response.json();
-  })
-  .then(data => {
-    thing_version = data['thing_version'];
+
+    const parsed = await response.json();
+    thing_version = parsed['thing_version'];
     Stts.setErr(null)
+
+    return true
   })
 }
 
@@ -196,7 +223,7 @@ function updateStatusBox() {
     : Stts.States.SAVED
   Stts.setState(`v${thing_version}`, state)
 }
-function safeToExit() {
+function areChangesSaved() {
   return dirty === false && saving === false;
 }
 function markDirty() {
@@ -206,13 +233,20 @@ function markDirty() {
 }
 function markClean() {
   dirty = false;
+  lastSave = Date.now();
   updateStatusBox();
 }
 
 async function autosaveLoop() {
-  if (dirty && !saving && Date.now() - lastSave >= SAVE_INTERVAL) {
-    await saveNow()
-    // TODO backoff retry loop on errors?
+  if (!saving && Date.now() - lastSave >= SAVE_INTERVAL) {
+    if (dirty) {
+      await saveNow()
+      // TODO backoff retry loop on errors?
+    }
+    else {
+      lastSave = Date.now()
+      checkForRemoteChanges()
+    }
   }
 }
 
@@ -231,16 +265,15 @@ async function saveNow() {
   }
 
   saving = true;
-  markClean();
+  updateStatusBox();
 
   try {
-    await saveContent();
-    lastSave = Date.now();
+    if (!await saveContent()) return false
+    markClean()
     return true
   }
   catch (error) {
     console.error('Error saving thing:', error)
-    markDirty();
     Stts.setErr(`Error saving thing: ${error}`)
     return false
   }
@@ -250,21 +283,44 @@ async function saveNow() {
   }
 }
 
+function checkForRemoteChanges() {
+  fetch(`/api/things/${THING_ID}/version`)
+    .then(async response => {
+      await Misc.checkFetchResp(response)
+      return response.json();
+    })
+    .then(data => {
+      if (thing_version === data['thing_version']) return;
+      if (areChangesSaved()) {
+        loadContent().then(() => {
+          Stts.setMsg(`Loaded version ${thing_version}`)
+        })
+      }
+      else {
+        lockForVersionConflict()
+      }
+    })
+}
+
 function startAutosaveLoop() {
+  if (autosave_interval_id != null) {
+    console.log("Not starting autosave as it is already started.")
+    return
+  }
+
   if (LOAD_VERSION != null) {
     console.log("Not starting autosave as load_version is set.")
     updateStatusBox()
     return
   }
 
-  markClean()
-  setInterval(autosaveLoop, 1000);
+  autosave_interval_id = setInterval(autosaveLoop, 1000);
 
   editor.on('update', markDirty)
   dateBox.addEventListener('input', markDirty)
 
   window.addEventListener('beforeunload', (event) => {
-    if (!safeToExit()) event.returnValue = "Discard unsaved changes?";
+    if (!areChangesSaved()) event.returnValue = "Discard unsaved changes?";
   });
 }
 

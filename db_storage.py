@@ -77,6 +77,15 @@ class DbStorage:
 
       return flask.Response(row[0], mimetype="application/json; charset=utf-8")
 
+  def thing_get_version(self, thing_id):
+    self._thing_check_id(thing_id)
+    with self.cursor() as cur:
+      cur.execute("SELECT version FROM things WHERE id=%s", (thing_id,))
+      row = cur.fetchone()
+      if row is None:
+        flask.abort(404, "thing not found.")
+      return {"thing_version": row[0]}
+
   def thing_new_id(self):
     with self.cursor() as cur:
       cur.execute("INSERT INTO things (created) VALUES (%s) RETURNING id",
@@ -98,7 +107,7 @@ class DbStorage:
 
       existing_version = row[0]
       if new_version <= existing_version:
-        flask.abort(400, f"new version {new_version} <= existing version {existing_version}.")
+        flask.abort(409, f"new version {new_version} <= existing version {existing_version}.")
 
       now = self._now()
       cur.execute(

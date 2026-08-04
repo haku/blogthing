@@ -47,6 +47,10 @@ def serve_things_root_post():
 def serve_things_get(thing_id):
   return store.thing_get(thing_id)
 
+@app.get("/api/things/<thing_id>/version")
+def serve_things_get_version(thing_id):
+  return store.thing_get_version(thing_id)
+
 @app.post("/api/things/<thing_id>")
 def serve_things_post(thing_id):
   if not flask.request.headers.get("Content-Type") == "application/json":
