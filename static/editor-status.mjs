@@ -15,7 +15,7 @@ function setState(version, state) {
   statusBox.classList.add(Symbol.keyFor(state))
 }
 
-const msgBox = document.getElementById('pop-msg')
+const msgBox = document.getElementById('msg-popover')
 let timerId = null
 
 function setMsg(msg, fade=true) {
@@ -24,13 +24,14 @@ function setMsg(msg, fade=true) {
 
   if (msg) {
     msgBox.textContent = msg
-    msgBox.classList.remove('fadeout')
-    msgBox.style.visibility = 'visible'
+    msgBox.classList.remove('fadeout', 'msg', 'err')
+    msgBox.classList.add(fade ? 'msg' : 'err')
+    msgBox.showPopover();
 
-    if (fade) timerId = setTimeout(() => msgBox.classList.add('fadeout'), 2000)
+    if (fade) timerId = setTimeout(() => msgBox.classList.add('fadeout'), 5000)
   }
   else {
-    msgBox.style.visibility = 'hidden'
+    msgBox.hidePopover();
   }
 }
 
