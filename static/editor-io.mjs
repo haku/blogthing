@@ -135,81 +135,6 @@ function saveContent() {
   })
 }
 
-function updatePageTitle() {
-  const title = extractTitle()
-  document.title = title != null ? `${title} - Blogthing` : "Blogthing"
-  return title
-}
-
-function updateTags() {
-  if (thing_tags.length > 0) {
-    tagsBox.innerHTML = ""
-    const tmpl = document.getElementById('tagtemplate');
-    for (let tag of thing_tags) {
-      const e = tmpl.content.cloneNode(true)
-      const btn = e.querySelector("button")
-      btn.textContent = tag
-      if (LOAD_VERSION == null) {
-        btn.addEventListener('click', () => promptRemoveTag(tag))
-      }
-      else {
-        btn.disabled = true
-      }
-      tagsBox.append(e)
-    }
-  }
-  else {
-    tagsBox.textContent = "(none)"
-  }
-}
-
-function promptRemoveTag(tag) {
-  if (confirm(`Remove tag?: ${tag}`)) {
-    const len = thing_tags.length
-    thing_tags = thing_tags.filter(t => t !== tag)
-    if (thing_tags.length != len) {
-      updateTags()
-      markDirty()
-    }
-  }
-}
-
-addTagBtn.addEventListener('click', () => {
-  let tag
-  while(tag = prompt("Tag: (max 50 characters)", tag)) {
-    if (tag.length < 50) {
-      if (!thing_tags.includes(tag)) {
-        thing_tags.push(tag)
-        updateTags()
-        markDirty()
-      }
-      break
-    }
-  }
-})
-
-function updatePublishedState() {
-  publishedBtn.textContent = thing_published ? "Published" : "Unpublished"
-  if (thing_published) {
-    toolBox.classList.add('published')
-  }
-  else {
-    toolBox.classList.remove('published')
-  }
-}
-
-publishedBtn.addEventListener('click', () => {
-  if (LOAD_VERSION != null) return
-
-  const change_to = !thing_published
-  if (confirm(`Set published=${change_to}?`)) {
-    thing_published = change_to
-    updatePublishedState()
-    markDirty()
-    // TODO trigger save now
-  }
-})
-
 
 const SAVE_INTERVAL = 10000;
 let dirty = false;
@@ -327,6 +252,86 @@ function startAutosaveLoop() {
 function start() {
   editor.on('create', loadContent)
 }
+
+
+// TODO maybe move this stuff to own module?
+// needs a nice way to get the event hooks for (re)load.
+// and maybe merge with some of the code directly in editor.html
+
+function updatePageTitle() {
+  const title = extractTitle()
+  document.title = title != null ? `${title} - Blogthing` : "Blogthing"
+  return title
+}
+
+function updateTags() {
+  if (thing_tags.length > 0) {
+    tagsBox.innerHTML = ""
+    const tmpl = document.getElementById('tagtemplate');
+    for (let tag of thing_tags) {
+      const e = tmpl.content.cloneNode(true)
+      const btn = e.querySelector("button")
+      btn.textContent = tag
+      if (LOAD_VERSION == null) {
+        btn.addEventListener('click', () => promptRemoveTag(tag))
+      }
+      else {
+        btn.disabled = true
+      }
+      tagsBox.append(e)
+    }
+  }
+  else {
+    tagsBox.textContent = "(none)"
+  }
+}
+
+function promptRemoveTag(tag) {
+  if (confirm(`Remove tag?: ${tag}`)) {
+    const len = thing_tags.length
+    thing_tags = thing_tags.filter(t => t !== tag)
+    if (thing_tags.length != len) {
+      updateTags()
+      markDirty()
+    }
+  }
+}
+
+addTagBtn.addEventListener('click', () => {
+  let tag
+  while(tag = prompt("Tag: (max 50 characters)", tag)) {
+    if (tag.length < 50) {
+      if (!thing_tags.includes(tag)) {
+        thing_tags.push(tag)
+        updateTags()
+        markDirty()
+      }
+      break
+    }
+  }
+})
+
+function updatePublishedState() {
+  publishedBtn.textContent = thing_published ? "Published" : "Unpublished"
+  if (thing_published) {
+    toolBox.classList.add('published')
+  }
+  else {
+    toolBox.classList.remove('published')
+  }
+}
+
+publishedBtn.addEventListener('click', () => {
+  if (LOAD_VERSION != null) return
+
+  const change_to = !thing_published
+  if (confirm(`Set published=${change_to}?`)) {
+    thing_published = change_to
+    updatePublishedState()
+    markDirty()
+    // TODO trigger save now
+  }
+})
 
 
 export { THING_ID, LOAD_VERSION, start, saveIfNeeded }
