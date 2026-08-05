@@ -21,7 +21,7 @@ planned:
 * [x] dark theme
 * [x] fix my weird link popup with this? https://tiptap.dev/docs/editor/getting-started/style-editor/custom-menus
 * [ ] way to delete posts
-* [ ] way to convert posts to serveable html
+* [x] way to convert posts to serveable html
   * also see https://github.com/tugkanpilka/tiptap-python-utils
   * maybe ./blogthing-generate --tags "foo,bar" --output some/path/for/output/html
 * [ ] figure out what is going on with thing_date / sort-key / whatever
