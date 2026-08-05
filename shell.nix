@@ -30,6 +30,7 @@ pkgs.mkShell {
       gunicorn
       psycopg
       psycopg-pool
+      requests
     ]))
   ];
 }
