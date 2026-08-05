@@ -22,7 +22,6 @@ app = flask.Flask(
     static_folder='static')
 
 app.config['SESSION_TYPE'] = 'cachelib'
-app.config['SESSION_SERIALIZATION_FORMAT'] = 'json'
 app.config['SESSION_CACHELIB'] = cachelib.SimpleCache(threshold=500)
 flask_session.Session(app)
 
