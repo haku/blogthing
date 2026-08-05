@@ -29,7 +29,7 @@ planned:
 * [ ] image alt text
 * [ ] minimal file management for deleting uploads, re-inserting them, etc
 * [ ] how to clean up unused images?  how even to tell they are unused?
-* [ ] actual auth (SSO) ooh so fancy
+* [x] actual auth (SSO) ooh so fancy
 * [ ] once enough data, some DB indexes
 
 maybe in the far future:

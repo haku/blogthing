@@ -2,9 +2,13 @@
 # https://flask.palletsprojects.com/en/stable/quickstart/
 # run: $ gunicorn server:app
 
+from authlib.integrations.flask_client import OAuth
+import cachelib
 import flask
 import flask_compress
+import flask_session
 import json
+import os
 
 from filetypes import TYPE_TO_EXTENSION
 import db_storage
@@ -16,6 +20,39 @@ app = flask.Flask(
     __name__,
     static_url_path='',
     static_folder='static')
+
+app.config['SESSION_TYPE'] = 'cachelib'
+app.config['SESSION_SERIALIZATION_FORMAT'] = 'json'
+app.config['SESSION_CACHELIB'] = cachelib.SimpleCache(threshold=500)
+flask_session.Session(app)
+
+oauth = OAuth(app)
+oauth.register(
+    'openid',
+    client_id=os.environ['OPENID_CLIENT_ID'],
+    client_secret=os.environ['OPENID_CLIENT_SECRET'],
+    server_metadata_url=os.environ['OPENID_METADATA_URL'],
+    client_kwargs={'scope': 'openid profile email'})
+
+@app.route('/authorize')
+def authorize():
+  token = oauth.openid.authorize_access_token()
+  info = token.get('userinfo')
+  if info:
+    flask.session['auth_name'] = info['name']
+    print(f"Auth successful, session: {flask.session}")
+    return flask.redirect('/')
+  else:
+    flask.abort(400, "Auth token missing userinfo.")
+
+@app.before_request
+def require_login():
+  if flask.request.endpoint in ['authorize', 'static']:  # method name
+    return None
+  if flask.session.get('auth_name'):
+    return None
+  redirect_uri = flask.url_for('authorize', _external=True)
+  return oauth.openid.authorize_redirect(redirect_uri)
 
 
 @app.route("/")

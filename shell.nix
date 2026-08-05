@@ -25,8 +25,11 @@ pkgs.mkShell {
   packages = with pkgs; [
     (pkgs.python3.withPackages (python-pkgs: with python-pkgs; [
       (pkgs.callPackage tiptapy {})
+      authlib
+      cachelib
       flask
       flask-compress
+      flask-session
       gunicorn
       psycopg
       psycopg-pool
