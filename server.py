@@ -24,8 +24,9 @@ def serve_root():
 
 @app.get("/api/things")
 def serve_things_root_get():
-  tags = flask.request.args.getlist("t")
-  return store.thing_list(tags)
+  include = flask.request.args.getlist("t")
+  exclude = flask.request.args.getlist("e")
+  return store.thing_list(include, exclude)
 
 @app.post("/api/things")
 def serve_things_root_post():

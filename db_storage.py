@@ -31,16 +31,16 @@ class DbStorage:
     self.db_pool.close()
 
 
-  def thing_list(self, tags):
+  def thing_list(self, include, exclude):
     subq = ""
     args = ()
-    if tags:
-      subq = ("WHERE id IN ("
-              "  SELECT DISTINCT thing_id"
-              "  FROM tags"
-              "  WHERE title = ANY(%s)"
-              ") ")
-      args = (tags,)
+    if include:
+      subq += ("WHERE id IN (SELECT DISTINCT thing_id FROM tags WHERE title = ANY(%s)) ")
+      args += (include,)
+    if exclude:
+      w = "AND" if subq else "WHERE"
+      subq += (f"{w} id NOT IN (SELECT DISTINCT thing_id FROM tags WHERE title = ANY(%s)) ")
+      args += (exclude,)
 
     query = ("SELECT id, version, updated, things.title, published,"
              "  array_agg(DISTINCT tags.title ORDER BY tags.title) AS tags "

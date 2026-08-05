@@ -72,7 +72,26 @@
       const newBtn = document.getElementById('new_thing')
       const tagList = document.getElementById('taglist')
       const thingList = document.querySelector('#thinglist menu')
-      let filter_tags = []  // TODO store this in the page url
+      let tags_include = []  // TODO store this in the page url
+      let tags_exclude = []  // TODO store this in the page url
+
+      function tagClicked(tag, btn) {
+        if (tags_include.includes(tag)) {
+          tags_include = tags_include.filter(t => t !== tag)
+          btn.classList.remove('is-active')
+          tags_exclude.push(tag)
+          btn.classList.add('is-exclude')
+        }
+        else if (tags_exclude.includes(tag)) {
+          tags_exclude = tags_exclude.filter(t => t !== tag)
+          btn.classList.remove('is-exclude')
+        }
+        else {
+          tags_include.push(tag)
+          btn.classList.add('is-active')
+        }
+        loadThings()
+      }
 
       function loadTags() {
         fetch('/api/tags/top')
@@ -86,17 +105,7 @@
             const row = tmpl.content.cloneNode(true)
             const btn = row.querySelector("button")
             btn.textContent = `${tag.title}(${tag.count})`
-            btn.addEventListener('click', () => {
-              if (filter_tags.includes(tag.title)) {
-                filter_tags = filter_tags.filter(t => t !== tag.title)
-                btn.classList.remove('is-active')
-              }
-              else {
-                filter_tags.push(tag.title)
-                btn.classList.add('is-active')
-              }
-              loadThings()
-            })
+            btn.addEventListener('click', () => tagClicked(tag.title, btn))
             tagList.append(row)
           }
         })
@@ -104,11 +113,10 @@
 
       function loadThings() {
         let url = "/api/things"
-        if (filter_tags.length > 0) {
+        if (tags_include.length > 0 || tags_exclude.length > 0) {
           const params = new URLSearchParams();
-          for (const tag of filter_tags) {
-            params.append("t", tag);
-          }
+          for (const tag of tags_include) params.append("t", tag);
+          for (const tag of tags_exclude) params.append("e", tag);
           url += `?${params}`
         }
 
