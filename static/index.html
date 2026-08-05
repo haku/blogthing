@@ -6,6 +6,9 @@
     <title>Blogthing</title>
     <link rel="stylesheet" href="/editor.css">
     <style>
+      #taglist .count {
+        font-variant-position: super;
+      }
       #thinglist menu {
         list-style-type: none;
         margin: 0;
@@ -40,7 +43,9 @@
             <button id="new_thing">New Thing</button>
           </div>
           <div id="taglist" class="bar center">
-            <template id="tagtemplate"><button></button></template>
+            <template id="tagtemplate"><button>
+              <span class="tag"></span><span class="count"></span>
+            </button></template>
           </div>
           <div class="bar right">
             <a href="/media.html">Media</a>
@@ -104,7 +109,8 @@
           for (const tag of data) {
             const row = tmpl.content.cloneNode(true)
             const btn = row.querySelector("button")
-            btn.textContent = `${tag.title}(${tag.count})`
+            row.querySelector(".tag").textContent = tag.title
+            row.querySelector(".count").textContent = tag.count
             btn.addEventListener('click', () => tagClicked(tag.title, btn))
             tagList.append(row)
           }
