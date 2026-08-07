@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/editor.css">
     <style>
       #taglist .count {
-        font-variant-position: super;
+        /* font-variant-position: super; firefox only */
+        display: inline-block;
+        transform: translateY(-0.3em) scale(.8);
       }
       #thinglist menu {
         list-style-type: none;
